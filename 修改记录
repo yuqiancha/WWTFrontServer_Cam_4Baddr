@@ -1,0 +1,10 @@
+2018-02-25：将3个时间都加上去了
+self.WaitCarComeTime = int(120)              #等待车子停进来的时间，2min不来就升锁
+self.WaitCarLeaveTime = int(300)             #车子停进来前5min，依旧是2min升锁，超出时间立刻升锁
+self.AfterCarLeaveTime = int(60)             #超出5min，认为车子是要走了，1min升锁
+重点增加了self.AfterCarLeaveTime,增加了这一条之后尚未进行测试
+
+
+2018-03-02：去掉GPIO控制从而实现在电脑上运行，测试WebService
+main.py的379行入口函数去掉
+main.py WebService.py中的from import去掉GPIO
