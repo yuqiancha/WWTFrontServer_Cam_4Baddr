@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1015</width>
-    <height>576</height>
+    <width>1020</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,10 +19,10 @@
    </property>
    <property name="geometry">
     <rect>
-     <x>190</x>
+     <x>200</x>
      <y>70</y>
-     <width>781</width>
-     <height>491</height>
+     <width>811</width>
+     <height>611</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -70,7 +70,7 @@
     <rect>
      <x>10</x>
      <y>0</y>
-     <width>961</width>
+     <width>1001</width>
      <height>68</height>
     </rect>
    </property>
@@ -238,10 +238,10 @@
   <widget class="QTextBrowser" name="textBrowser_Cam">
    <property name="geometry">
     <rect>
-     <x>0</x>
+     <x>10</x>
      <y>70</y>
      <width>191</width>
-     <height>491</height>
+     <height>611</height>
     </rect>
    </property>
   </widget>
