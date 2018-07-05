@@ -9,7 +9,7 @@ import urllib.parse
 import logging.config
 from os import path
 import os
-#from gpioctr import GpioCtr
+from gpioctr import GpioCtr
 import json
 
 MyLog2 = logging.getLogger('ws_debug_log2')       #log data
@@ -114,7 +114,7 @@ def ServerOn(conn,self):
         SendToWebstr = '1ACF'+self.StrID + str(EPDUNums).zfill(2)+EPDUStr
         MyLog2.info('SendToServer:'+SendToWebstr)
         try:
-            requrl = "http://192.168.0.115:8083/wwt-services-external/restful/server/position/secure/receiveServerRequest"
+            requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/receiveServerRequest"
             #conn.request("POST",urllib.parse.quote(SendToWebstr))
             headerdata = {"Content-type": "application/json"}
             sendData = {"param":SendToWebstr}
@@ -127,7 +127,7 @@ def ServerOn(conn,self):
             MajorLog.error("Exception lostcount=:" + str(self.lostcount))
             if self.lostcount > 3:
                 MajorLog.error("Try Reconnect To Server:" + str(self.rebootwait))
-                conn = http.client.HTTPConnection("192.168.0.115:8083", timeout=10)
+                conn = http.client.HTTPSConnection("www.bohold.cn", port=443, timeout=10)
                 time.sleep(10)
                 self.lostcount = 0
                 self.rebootwait +=1
@@ -136,7 +136,7 @@ def ServerOn(conn,self):
                     self.rebootwait = 0
                     MajorLog.error('Reboot 4G Now!!')
 
-                    GpioCtr.Route4GReboot(self)#reboot 4G路由器之后需要重新开启连接服务，否则一直异常
+                #    GpioCtr.Route4GReboot(self)#reboot 4G路由器之后需要重新开启连接服务，否则一直异常
                     time.sleep(2)
                     self.rebootRasp +=1
 
