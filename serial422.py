@@ -39,12 +39,16 @@ class RS422Func(QThread):
             self.WaitCarComeTime = self.cf.getint("StartLoad","WaitCarComeTime")
             self.WaitCarLeaveTime = self.cf.getint("StartLoad","WaitCarLeaveTime")
             self.AfterCarLeaveTime = self.cf.getint("StartLoad","AfterCarLeaveTime")
+            self.ScanMaxLock = int(self.cf.get("StartLoad","ScanMaxLock")[2:],16)
+            self.StartCount = int(self.cf.get("StartLoad","StartCount")[2:],16)
         except Exception as ex:
             MajorLog(ex+'From openfile /waitcartime')
 
         MyLog.debug("WaitCarComeTime:"+str(self.WaitCarComeTime))
         MyLog.debug("WaitCarLeaveTime:"+str(self.WaitCarLeaveTime))
         MyLog.debug("AfterCarLeaveTime:" + str(self.AfterCarLeaveTime))
+        MyLog.debug("ScanMaxLock:" + str(self.ScanMaxLock))
+        MyLog.debug("StartCount:" + str(self.StartCount))
 
         self.myEvent = threading.Event()
         self.mutex = threading.Lock()
@@ -142,7 +146,7 @@ class RS422Func(QThread):
         try:
             ser = serial.Serial('/dev/ttyAMA0', 9600, timeout=0.1)
             if ser.isOpen():
-                t = threading.Thread(target=InitPortList, args=(ser, self))
+                t = threading.Thread(target=InitPortList, args=(ser, self.ScanMaxLock, self.StartCount, self))
                 t.start()
                 t2 = threading.Thread(target=Normalchaxun, args=(ser, self))
                 t2.start()
@@ -152,7 +156,7 @@ class RS422Func(QThread):
             try:
                 ser = serial.Serial('/dev/ttyUSB0', 9600, timeout=0.1)
                 if ser.isOpen():
-                    t = threading.Thread(target=InitPortList, args=(ser, self))
+                    t = threading.Thread(target=InitPortList, args=(ser, self.ScanMaxLock, self.StartCount,self))
                     t.start()
                     t2 = threading.Thread(target=Normalchaxun, args=(ser, self))
                     t2.start()
@@ -377,11 +381,12 @@ class RS422Func(QThread):
         pass
 
 
-def InitPortList(ser,self):
+def InitPortList(ser,ScanMaxLock,StartCount,self):
     MyLog.info('Enter InitPortList')
-    ScanMaxLock = 0x11000020
+ #   ScanMaxLock = 0x11000010
+
     if ser.isOpen():
-        count = 0x11000000
+        count = StartCount
         while count < ScanMaxLock:
             Address = hex(count)[2:].zfill(8)
             Tempstr = (Address + '0420010004').replace('\t', '').replace(' ', '').replace('\n', '').strip()
@@ -398,7 +403,7 @@ def InitPortList(ser,self):
                 MyLog.error(ex)
         MyLog.debug(SharedMemory.LockList)
 
-        count = 0x11000000
+        count = StartCount
         while count < ScanMaxLock:
             Address = hex(count)[2:].zfill(8)
             Tempstr = (Address + '0420010004').replace('\t', '').replace(' ', '').replace('\n', '').strip()

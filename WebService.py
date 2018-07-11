@@ -14,6 +14,7 @@ import json
 
 MyLog2 = logging.getLogger('ws_debug_log2')       #log data
 MajorLog = logging.getLogger('ws_error_log')      #log error
+MyLogCam = logging.getLogger('ws_cam_log')          #cam log
 
 class WebServer(QThread):
     signal = pyqtSignal(str)
@@ -25,12 +26,14 @@ class WebServer(QThread):
         self.rebootwait = 0
         self.rebootRasp = 0
 
+        self.mutex = threading.Lock()
+
         try:
             with open(file=path.expandvars('$HOME') + '/Downloads/WWTFrontServer/FrontServerID', mode='r') as file:
                 self.StrID = file.read()
         except Exception as ex:
             MajorLog(ex+'From openfile frontserverid')
-            self.StrID = '沪A0908'
+            self.StrID = '沪A9999'
         MyLog2.debug(self.StrID)
 
         global conn
@@ -44,6 +47,66 @@ class WebServer(QThread):
         self.mtimer.timeout.connect(self.SendAllLock2Server)
         self.mtimer.start(60000)
 
+    def SendLiscenseToServer(self,addr,licenseID):
+        EPDUStr =''
+        EPDUNums = 1                    #实际发送的EPDU个数
+        for item in SharedMemory.LockList:
+            if item.addr == addr:
+                status = 'ff'           #检测摇臂状态，根据与后台的协议转化为Web发送的值
+                if item.arm =='ff':     #摇臂降下到位
+                    status = '20'
+                elif item.arm =='55':   #摇臂升起到位
+                    status = '10'
+                elif item.arm =='00':   #摇臂正在升降
+                    status = '00'
+                else:
+                    status = 'FF'
+
+                ErrCodeValue = 0
+                if item.sensor == '55':#地磁故障
+                    ErrCodeValue +=1
+                if item.sensor == '11':#探头1故障
+                    ErrCodeValue +=2
+                if item.sensor == '22':#探头2故障
+                    ErrCodeValue +=4
+                if item.sensor == '33':#两个探头都故障
+                    ErrCodeValue +=6
+
+                if item.machine == '55':#摇臂遇阻
+                    ErrCodeValue += 16
+                if item.machine == 'FF':#摇臂破坏
+                    ErrCodeValue += 32
+                if item.machine == '88':#电机连轴故障
+                    ErrCodeValue += 64
+
+                item.ErrorCode = hex(ErrCodeValue)[2:].zfill(2)     #将摇臂故障根据协议转化为发给Web的值
+
+                EPDUStr +='eb90'+item.addr +status+item.car+item.battery+item.ErrorCode +licenseID.zfill(8)     #'eb90'+地址+状态+电量+异常代码+'AAAA09d7'
+                pass
+        SendToWebstr = '1ACF'+self.StrID + str(EPDUNums).zfill(2)+EPDUStr
+        MyLogCam.info('SendLiscenseToServer--'+SendToWebstr)
+        try:
+            requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/checkNewEnergy"
+            headerdata = {"Content-type": "application/json"}
+            sendData = {"param": SendToWebstr}
+            conn.request('POST', requrl, json.dumps(sendData), headerdata)
+        except Exception as ex1:
+            MajorLog.error('SendLiscenseToServer--Error From conn.requeset Post Failed')
+        finally:
+            pass
+
+        data1 = ''
+        RecvData = ''
+        try:
+            r1 = conn.getresponse()
+            RecvData = r1.read()
+
+            RecvData = str(RecvData, 'utf-8')
+            MyLog2.info(RecvData)
+        except Exception as ex1:
+            MajorLog.error('SendLiscenseToServer--Error From getresponse Post Failed')
+
+        pass
 
     def close(self):
         self.ThreadTag = False
@@ -113,6 +176,7 @@ def ServerOn(conn,self):
                 pass
         SendToWebstr = '1ACF'+self.StrID + str(EPDUNums).zfill(2)+EPDUStr
         MyLog2.info('SendToServer:'+SendToWebstr)
+
         try:
             requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/receiveServerRequest"
             #conn.request("POST",urllib.parse.quote(SendToWebstr))

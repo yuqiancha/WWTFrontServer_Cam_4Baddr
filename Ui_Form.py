@@ -11,10 +11,10 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_Form(object):
     def setupUi(self, Form):
         Form.setObjectName("Form")
-        Form.resize(1020, 700)
+        Form.resize(1020, 590)
         self.tableWidget = QtWidgets.QTableWidget(Form)
         self.tableWidget.setEnabled(True)
-        self.tableWidget.setGeometry(QtCore.QRect(200, 70, 811, 611))
+        self.tableWidget.setGeometry(QtCore.QRect(200, 70, 811, 511))
         self.tableWidget.setAutoFillBackground(False)
         self.tableWidget.setEditTriggers(QtWidgets.QAbstractItemView.NoEditTriggers)
         self.tableWidget.setAlternatingRowColors(False)
@@ -113,7 +113,7 @@ class Ui_Form(object):
         self.verticalLayout_8.addWidget(self.pushButton_exit)
         self.horizontalLayout.addLayout(self.verticalLayout_8)
         self.textBrowser_Cam = QtWidgets.QTextBrowser(Form)
-        self.textBrowser_Cam.setGeometry(QtCore.QRect(10, 70, 191, 611))
+        self.textBrowser_Cam.setGeometry(QtCore.QRect(10, 70, 191, 511))
         self.textBrowser_Cam.setObjectName("textBrowser_Cam")
 
         self.retranslateUi(Form)

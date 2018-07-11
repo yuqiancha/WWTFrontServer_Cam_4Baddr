@@ -19,7 +19,9 @@ MyLogCam = logging.getLogger('ws_cam_log')          #cam log
 
 class TcpServer(QThread):
     signal_detect = pyqtSignal(str,str)
+    signal_blue_detect = pyqtSignal(str,str)
     signal_showID = pyqtSignal(str)
+    signal_blue_showID = pyqtSignal(str)
     def __init__(self):
         super(TcpServer,self).__init__()
         print("TcpServer In")
@@ -92,8 +94,9 @@ def RecvFromCamera(tcpClient,clientaddr,self):
                 if a1!=-1 and a2!=-1:
                     DColor = data[a2+2:a3]
                     Dlisence = data[a1+2:a2]
+                    print(Dlisence,DColor)
                     if DColor=='绿色':
-                        MyLogCam.info(str(clientaddr[0])+str(self.cf.getint("StartLoad",clientaddr[0]))+':'+Dlisence)
+                        MyLogCam.info(str(clientaddr[0])+str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence)
 
                         timenow = int(time.time())
 
@@ -102,8 +105,13 @@ def RecvFromCamera(tcpClient,clientaddr,self):
                         timelast = timenow
 
                         if timeSpent > 5:
-                            self.signal_detect.emit('05'+ str(self.cf.getint("StartLoad",clientaddr[0])),Dlisence)
-                            self.signal_showID.emit(str(self.cf.getint("StartLoad",clientaddr[0]))+':'+Dlisence)
+                            self.signal_detect.emit('05'+ str(self.cf.get("StartLoad",clientaddr[0])),Dlisence)
+                            self.signal_showID.emit(str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence)
+                    elif DColor=='蓝色':
+                        self.signal_blue_detect.emit(str(self.cf.get("StartLoad",clientaddr[0])),Dlisence)
+                        self.signal_blue_showID.emit(str(self.cf.get("StartLoad", clientaddr[0])) + ':' + Dlisence)
+                    else:
+                        pass
 
         else:
             print('收到数据长度不正确！')

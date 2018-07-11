@@ -10,7 +10,7 @@ from WebService import WebServer
 import time as t
 import logging
 import logging.config
-#from gpioctr import GpioCtr
+from gpioctr import GpioCtr
 from os import path
 from NewCamServer import TcpServer
 from datetime import *
@@ -254,6 +254,16 @@ class Main(QWidget,Ui_Form):
             self.textBrowser_Cam.clear()
             pass
 
+    def ShowID2(self,str1):
+        strTime = datetime.strftime(datetime.now(), '%Y-%m-%d %H:%M:%S')
+        print("ShowID:"+str1)
+        self.textBrowser_Cam.append("SendToServer--"+strTime+":"+str1)
+        MyLog2.info(str1)
+        self.ClearTextTag +=1
+        if self.ClearTextTag > 20:
+            self.ClearTextTag = 0
+            self.textBrowser_Cam.clear()
+            pass
 
     def ShowNewLock(self,MyLock):
         row_count = self.tableWidget.rowCount();
@@ -409,5 +419,6 @@ if __name__ == '__main__':
 
     myTcpServer.signal_detect.connect(rs422.LockCMDExcute2)
     myTcpServer.signal_showID.connect(ex.ShowID)
-
+    myTcpServer.signal_blue_detect.connect(webservice.SendLiscenseToServer)
+    myTcpServer.signal_blue_showID.connect(ex.ShowID2)
     sys.exit(app.exec_())

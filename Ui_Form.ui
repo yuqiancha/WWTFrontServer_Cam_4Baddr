@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1020</width>
-    <height>700</height>
+    <height>590</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -22,7 +22,7 @@
      <x>200</x>
      <y>70</y>
      <width>811</width>
-     <height>611</height>
+     <height>511</height>
     </rect>
    </property>
    <property name="autoFillBackground">
@@ -241,7 +241,7 @@
      <x>10</x>
      <y>70</y>
      <width>191</width>
-     <height>611</height>
+     <height>511</height>
     </rect>
    </property>
   </widget>
