@@ -96,7 +96,7 @@ def RecvFromCamera(tcpClient,clientaddr,self):
                     Dlisence = data[a1+2:a2]
                     print(Dlisence,DColor)
                     if DColor=='绿色':
-                        MyLogCam.info(str(clientaddr[0])+str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence)
+                        MyLogCam.info(str(clientaddr[0])+str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence+"绿色")
 
                         timenow = int(time.time())
 
@@ -108,6 +108,7 @@ def RecvFromCamera(tcpClient,clientaddr,self):
                             self.signal_detect.emit('05'+ str(self.cf.get("StartLoad",clientaddr[0])),Dlisence)
                             self.signal_showID.emit(str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence)
                     elif DColor=='蓝色':
+                        MyLogCam.info(str(clientaddr[0])+str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence+"蓝色")
                         self.signal_blue_detect.emit(str(self.cf.get("StartLoad",clientaddr[0])),Dlisence)
                         self.signal_blue_showID.emit(str(self.cf.get("StartLoad", clientaddr[0])) + ':' + Dlisence)
                     else:

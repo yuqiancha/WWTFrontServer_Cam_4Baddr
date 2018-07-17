@@ -95,13 +95,13 @@ class RS422Func(QThread):
                     lock.nocaron = 0
 
                     self.LockUp(lock.addr)
-                    t.sleep(5)
-                    if lock.arm =='ff':
+                    t.sleep(10)
+                    if lock.arm =='ff' and lock.car == '00':
                         self.LockUp(lock.addr)
-                        t.sleep(5)
-                    if lock.arm =='ff':
+                        t.sleep(10)
+                    if lock.arm =='ff' and lock.car == '00':
                         self.LockUp(lock.addr)
-                        t.sleep(5)
+                        t.sleep(10)
 
                     if lock.arm =='55':
                         lock.carLeave = datetime.now()

@@ -84,14 +84,31 @@ class WebServer(QThread):
                 EPDUStr +='eb90'+item.addr +status+item.car+item.battery+item.ErrorCode +licenseID.zfill(8)     #'eb90'+地址+状态+电量+异常代码+'AAAA09d7'
                 pass
         SendToWebstr = '1ACF'+self.StrID + str(EPDUNums).zfill(2)+EPDUStr
-        MyLogCam.info('SendLiscenseToServer--'+SendToWebstr)
+        MyLogCam.info('SendLiscenseToServer--'+addr+'-'+licenseID+'-'+SendToWebstr)
+
+        self.mutex.acquire()
+
+        requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/checkNewEnergy"
+        headerdata = {"Content-type": "application/json"}
+        sendData = {"param": SendToWebstr}
+
         try:
-            requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/checkNewEnergy"
-            headerdata = {"Content-type": "application/json"}
-            sendData = {"param": SendToWebstr}
             conn.request('POST', requrl, json.dumps(sendData), headerdata)
         except Exception as ex1:
-            MajorLog.error('SendLiscenseToServer--Error From conn.requeset Post Failed')
+            MyLogCam.error(ex1)
+            MyLogCam.error('SendLiscenseToServer--Error From conn.requeset Post Failed--1')
+            time.sleep(1)
+            try:
+                conn.request('POST', requrl, json.dumps(sendData), headerdata)
+            except Exception as ex1:
+                MyLogCam.error(ex1)
+                MyLogCam.error('SendLiscenseToServer--Error From conn.requeset Post Failed--2')
+                time.sleep(1)
+                try:
+                    conn.request('POST', requrl, json.dumps(sendData), headerdata)
+                except Exception as ex1:
+                    MyLogCam.error(ex1)
+                    MyLogCam.error('SendLiscenseToServer--Error From conn.requeset Post Failed--3')
         finally:
             pass
 
@@ -99,13 +116,15 @@ class WebServer(QThread):
         RecvData = ''
         try:
             r1 = conn.getresponse()
+
             RecvData = r1.read()
 
             RecvData = str(RecvData, 'utf-8')
-            MyLog2.info(RecvData)
+            MyLogCam.info(RecvData)
         except Exception as ex1:
-            MajorLog.error('SendLiscenseToServer--Error From getresponse Post Failed')
+            MajorLog.error('SendLiscenseToServer--Error From conn.getresponse Failed')
 
+        self.mutex.release()
         pass
 
     def close(self):
@@ -177,13 +196,13 @@ def ServerOn(conn,self):
         SendToWebstr = '1ACF'+self.StrID + str(EPDUNums).zfill(2)+EPDUStr
         MyLog2.info('SendToServer:'+SendToWebstr)
 
+        self.mutex.acquire()
         try:
             requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/receiveServerRequest"
             #conn.request("POST",urllib.parse.quote(SendToWebstr))
             headerdata = {"Content-type": "application/json"}
             sendData = {"param":SendToWebstr}
             conn.request('POST', requrl, json.dumps(sendData), headerdata)
-
         except Exception as ex1:
             MajorLog.error('Error From conn.requeset Post Failed')
             #是否在这里添加，如果多次Post失败则进入休眠等待N分钟后再重新连接
@@ -211,6 +230,7 @@ def ServerOn(conn,self):
             continue
         finally:
             pass
+
 
         data1 = ''
         RecvData = ''
@@ -302,7 +322,7 @@ def ServerOn(conn,self):
             MajorLog.error(ex2)
         finally:
             pass
-
+        self.mutex.release()
         time.sleep(2)
     MyLog2.info("WebService Server Thread off!")
     conn.close()
