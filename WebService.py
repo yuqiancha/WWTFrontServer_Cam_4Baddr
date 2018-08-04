@@ -123,10 +123,11 @@ class WebServer(QThread):
                     MyLogCam.error(ex1)
                     MyLogCam.error('SendLiscenseToServer--Error From conn.requeset Post Failed--3')
         finally:
+            self.mutex.release()
             pass
 
 
-        self.mutex.release()
+
         pass
 
     def close(self):
@@ -198,7 +199,9 @@ def ServerOn(conn,self):
         SendToWebstr = '1ACF'+self.StrID + str(EPDUNums).zfill(2)+EPDUStr
         MyLog2.info('SendToServer:'+SendToWebstr)
 
+        print('Get lock before')
         self.mutex.acquire()
+        print("Get Lock!")
         try:
             requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/receiveServerRequest"
             #conn.request("POST",urllib.parse.quote(SendToWebstr))
@@ -323,12 +326,15 @@ def ServerOn(conn,self):
                     os.system('reboot')
             continue
         finally:
+            print('Before lock release')
+            self.mutex.release()
+            print('lock release')
             pass
 
 
 
-        self.mutex.release()
 
         time.sleep(2)
+
     MyLog2.info("WebService Server Thread off!")
     conn.close()
