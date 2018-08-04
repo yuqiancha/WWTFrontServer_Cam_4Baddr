@@ -94,6 +94,19 @@ class WebServer(QThread):
 
         try:
             conn.request('POST', requrl, json.dumps(sendData), headerdata)
+
+            data1 = ''
+            RecvData = ''
+            try:
+                r1 = conn.getresponse()
+
+                RecvData = r1.read()
+
+                RecvData = str(RecvData, 'utf-8')
+                MyLogCam.info(RecvData)
+            except Exception as ex1:
+                MajorLog.error('SendLiscenseToServer--Error From conn.getresponse Failed')
+
         except Exception as ex1:
             MyLogCam.error(ex1)
             MyLogCam.error('SendLiscenseToServer--Error From conn.requeset Post Failed--1')
@@ -112,17 +125,6 @@ class WebServer(QThread):
         finally:
             pass
 
-        data1 = ''
-        RecvData = ''
-        try:
-            r1 = conn.getresponse()
-
-            RecvData = r1.read()
-
-            RecvData = str(RecvData, 'utf-8')
-            MyLogCam.info(RecvData)
-        except Exception as ex1:
-            MajorLog.error('SendLiscenseToServer--Error From conn.getresponse Failed')
 
         self.mutex.release()
         pass
@@ -203,6 +205,98 @@ def ServerOn(conn,self):
             headerdata = {"Content-type": "application/json"}
             sendData = {"param":SendToWebstr}
             conn.request('POST', requrl, json.dumps(sendData), headerdata)
+
+            data1 = ''
+            RecvData = ''
+            try:
+                r1 = conn.getresponse()
+                RecvData = r1.read()
+
+                RecvData = str(RecvData, 'utf-8')
+                MyLog2.info(RecvData)
+
+                data2 = json.loads(RecvData)
+                # MyLog2.info(data2)
+                if data2['result'] != None:
+                    data1 = (data2['result'])
+                else:
+                    data1 = 'null'
+                    #            print(data1)
+
+                    #            MyLog2.info('RecvFrServer:' + data1)
+
+                if data1 == '':
+                    MyLog2.error('未收到服务器回复！')
+                    pass
+                elif data1 == 'null':
+                    MyLog2.error('服务器返回null')
+                elif data1 == 'Heart' or data1 == 'heart':
+
+                    self.rebootwait = 0  # 收到心跳则将rebootwait计数重置为0
+                    pass
+                else:
+                    if len(data1) >= 10:
+                        if data1[0:4] == 'eb90' and len(data1) == 10:  # 获取全部锁状态、开关电源、重启现场、获取日志、获取数据
+                            cmdtype = data1[6:8]
+                            cmd = data1[8:10]
+
+                            if cmdtype == '01' and cmd == '01':
+                                for lock in SharedMemory.LockList:
+                                    lock.StatusChanged = True
+
+                            if cmdtype == '01' and cmd == '13':  # 现场日志
+                                pass
+                            if cmdtype == '01' and cmd == '14':  # 现场数据
+                                pass
+                            if cmdtype == '02' and cmd == '10':  # 打开锁电源
+                                GpioCtr.LockPowerOn(self)
+                                pass
+                            if cmdtype == '02' and cmd == '11':  # 关闭锁电源
+                                GpioCtr.LockPowerOff(self)
+                                pass
+                            if cmdtype == '03' and cmd == '12':  # 重启树莓派
+                                os.system('reboot')
+                                pass
+
+                        if data1[0:4] == 'eb90' and data1[4:12] != '00000000':
+                            cmdlist = data1[4:len(data1)].split(';')
+                            #           MyLog2.debug(cmdlist)
+                            #           MyLog2.debug(len(cmdlist))
+                            for i in range(len(cmdlist)):
+                                temp = cmdlist[i]
+                                #              MyLog2.debug('cmdlist='+temp)
+
+                                addr = temp[0:8]
+                                cmdtype = temp[8:10]
+                                cmd = temp[10:12]
+
+                                strToserial = ''  # 控制指令
+                                if cmd == '03':
+                                    strToserial += '03'
+                                if cmd == '04':
+                                    strToserial += '04'
+                                if cmd == '05':
+                                    strToserial += '05'
+                                if cmd == '06':
+                                    strToserial += '06'
+                                if cmd == '07':
+                                    strToserial += '07'
+                                if cmd == '08':
+                                    strToserial += '08'
+                                if cmd == '09':
+                                    strToserial += '09'
+                                strToserial += addr
+                                MyLog2.info("触发" + strToserial)
+                                self.signal.emit(strToserial)
+
+            except Exception as ex2:
+                MyLog2.error('From conn.getresponse:')
+                MyLog2.error(ex2)
+                MajorLog.error('From conn.getresponse:')
+                MajorLog.error(ex2)
+            finally:
+                pass
+
         except Exception as ex1:
             MajorLog.error('Error From conn.requeset Post Failed')
             #是否在这里添加，如果多次Post失败则进入休眠等待N分钟后再重新连接
@@ -232,97 +326,9 @@ def ServerOn(conn,self):
             pass
 
 
-        data1 = ''
-        RecvData = ''
-        try:
-            r1 = conn.getresponse()
-            RecvData = r1.read()
 
-            RecvData = str(RecvData, 'utf-8')
-            MyLog2.info(RecvData)
-
-            data2 = json.loads(RecvData)
-            #MyLog2.info(data2)
-            if data2['result']!=None:
-                data1 = (data2['result'])
-            else:
-                data1 = 'null'
-#            print(data1)
-
-#            MyLog2.info('RecvFrServer:' + data1)
-
-            if data1 == '':
-                MyLog2.error('未收到服务器回复！')
-                pass
-            elif data1 =='null':
-                MyLog2.error('服务器返回null')
-            elif data1 == 'Heart' or data1=='heart':
-
-                self.rebootwait = 0 #收到心跳则将rebootwait计数重置为0
-                pass
-            else:
-                if len(data1) >= 10:
-                    if data1[0:4] == 'eb90' and len(data1)==10:      #获取全部锁状态、开关电源、重启现场、获取日志、获取数据
-                        cmdtype = data1[6:8]
-                        cmd = data1[8:10]
-
-                        if cmdtype == '01' and cmd == '01':
-                            for lock in SharedMemory.LockList:
-                                lock.StatusChanged = True
-
-                        if cmdtype == '01' and cmd == '13':  # 现场日志
-                            pass
-                        if cmdtype == '01' and cmd == '14':  # 现场数据
-                            pass
-                        if cmdtype == '02' and cmd == '10':  # 打开锁电源
-                            GpioCtr.LockPowerOn(self)
-                            pass
-                        if cmdtype == '02' and cmd == '11':  # 关闭锁电源
-                            GpioCtr.LockPowerOff(self)
-                            pass
-                        if cmdtype == '03' and cmd == '12':  # 重启树莓派
-                            os.system('reboot')
-                            pass
-
-                    if data1[0:4] == 'eb90' and data1[4:12]!='00000000':
-                        cmdlist = data1[4:len(data1)].split(';')
-             #           MyLog2.debug(cmdlist)
-             #           MyLog2.debug(len(cmdlist))
-                        for i in range(len(cmdlist)):
-                            temp = cmdlist[i]
-              #              MyLog2.debug('cmdlist='+temp)
-
-                            addr = temp[0:8]
-                            cmdtype = temp[8:10]
-                            cmd = temp[10:12]
-
-                            strToserial = ''  # 控制指令
-                            if cmd == '03':
-                                strToserial += '03'
-                            if cmd == '04':
-                                strToserial += '04'
-                            if cmd == '05':
-                                strToserial += '05'
-                            if cmd == '06':
-                                strToserial += '06'
-                            if cmd == '07':
-                                strToserial += '07'
-                            if cmd == '08':
-                                strToserial += '08'
-                            if cmd == '09':
-                                strToserial += '09'
-                            strToserial += addr
-                            MyLog2.info("触发" + strToserial)
-                            self.signal.emit(strToserial)
-
-        except Exception as ex2:
-            MyLog2.error('From conn.getresponse:')
-            MyLog2.error(ex2)
-            MajorLog.error('From conn.getresponse:')
-            MajorLog.error(ex2)
-        finally:
-            pass
         self.mutex.release()
+
         time.sleep(2)
     MyLog2.info("WebService Server Thread off!")
     conn.close()
