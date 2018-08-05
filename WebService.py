@@ -9,7 +9,7 @@ import urllib.parse
 import logging.config
 from os import path
 import os
-from gpioctr import GpioCtr
+#from gpioctr import GpioCtr
 import json
 
 MyLog2 = logging.getLogger('ws_debug_log2')       #log data
@@ -87,7 +87,7 @@ class WebServer(QThread):
         MyLogCam.info('SendLiscenseToServer--'+addr+'-'+licenseID+'-'+SendToWebstr)
 
         self.mutex.acquire()
-
+        print('get lock 22')
         requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/checkNewEnergy"
         headerdata = {"Content-type": "application/json"}
         sendData = {"param": SendToWebstr}
@@ -199,9 +199,9 @@ def ServerOn(conn,self):
         SendToWebstr = '1ACF'+self.StrID + str(EPDUNums).zfill(2)+EPDUStr
         MyLog2.info('SendToServer:'+SendToWebstr)
 
-        print('Get lock before')
+        print('Get lock before 11')
         self.mutex.acquire()
-        print("Get Lock!")
+        print("Get Lock 11 !")
         try:
             requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/receiveServerRequest"
             #conn.request("POST",urllib.parse.quote(SendToWebstr))
@@ -224,9 +224,6 @@ def ServerOn(conn,self):
                     data1 = (data2['result'])
                 else:
                     data1 = 'null'
-                    #            print(data1)
-
-                    #            MyLog2.info('RecvFrServer:' + data1)
 
                 if data1 == '':
                     MyLog2.error('未收到服务器回复！')
@@ -234,7 +231,6 @@ def ServerOn(conn,self):
                 elif data1 == 'null':
                     MyLog2.error('服务器返回null')
                 elif data1 == 'Heart' or data1 == 'heart':
-
                     self.rebootwait = 0  # 收到心跳则将rebootwait计数重置为0
                     pass
                 else:
@@ -267,8 +263,6 @@ def ServerOn(conn,self):
                             #           MyLog2.debug(len(cmdlist))
                             for i in range(len(cmdlist)):
                                 temp = cmdlist[i]
-                                #              MyLog2.debug('cmdlist='+temp)
-
                                 addr = temp[0:8]
                                 cmdtype = temp[8:10]
                                 cmd = temp[10:12]
@@ -330,8 +324,6 @@ def ServerOn(conn,self):
             self.mutex.release()
             print('lock release')
             pass
-
-
 
 
         time.sleep(2)

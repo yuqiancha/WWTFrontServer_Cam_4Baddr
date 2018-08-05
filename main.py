@@ -25,7 +25,7 @@ MyLogCam = logging.getLogger('ws_cam_log')          #cam log
 
 class Main(QWidget,Ui_Form):
     signal_LockCMD = pyqtSignal(str)
-
+    signal_test = pyqtSignal(str,str)
     def __init__(self):
         super(Main,self).__init__()
         self.setupUi(self)
@@ -118,6 +118,9 @@ class Main(QWidget,Ui_Form):
         pass
 
     def btnResetClicked(self):
+
+        self.signal_test.emit('192.168.0.17', '沪A78787')
+
         addr = self.comboBox.currentText()
         cmd = '03'
         self.signal_LockCMD.emit(cmd+addr)
@@ -402,7 +405,7 @@ if __name__ == '__main__':
     ex=Main()
     ex.show()
 
-    gpio = GpioCtr()
+#    gpio = GpioCtr()
 
     myTcpServer = TcpServer()
 
@@ -421,4 +424,7 @@ if __name__ == '__main__':
     myTcpServer.signal_showID.connect(ex.ShowID)
     myTcpServer.signal_blue_detect.connect(webservice.SendLiscenseToServer)
     myTcpServer.signal_blue_showID.connect(ex.ShowID2)
+
+    ex.signal_test.connect(webservice.SendLiscenseToServer)
+
     sys.exit(app.exec_())
