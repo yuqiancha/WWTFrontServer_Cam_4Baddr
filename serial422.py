@@ -31,7 +31,7 @@ class RS422Func(QThread):
         self.WaitCarComeTime = int(120)              #等待车子停进来的时间，2min不来就升锁
         self.WaitCarLeaveTime = int(300)             #车子停进来前5min，依旧是2min升锁，超出时间立刻升锁
         self.AfterCarLeaveTime = int(10)             #超出5min，认为车子是要走了，1min升锁
-
+        self.ScanLockFreq = int(2)                   #默认2s扫描总线间隔
         try:
             self.cf = configparser.ConfigParser()
             self.cf.read(path.expandvars('$HOME') + '/Downloads/WWTFrontServer/Configuration.ini',encoding="utf-8-sig")
@@ -41,14 +41,16 @@ class RS422Func(QThread):
             self.AfterCarLeaveTime = self.cf.getint("StartLoad","AfterCarLeaveTime")
             self.ScanMaxLock = int(self.cf.get("StartLoad","ScanMaxLock")[2:],16)
             self.StartCount = int(self.cf.get("StartLoad","StartCount")[2:],16)
+            self.ScanLockFreq = self.cf.getint("StartLoad","ScanLockFreq")
         except Exception as ex:
-            MajorLog(ex+'From openfile /waitcartime')
+            MajorLog.error(ex+'From openfile /waitcartime')
 
         MyLog.debug("WaitCarComeTime:"+str(self.WaitCarComeTime))
         MyLog.debug("WaitCarLeaveTime:"+str(self.WaitCarLeaveTime))
         MyLog.debug("AfterCarLeaveTime:" + str(self.AfterCarLeaveTime))
         MyLog.debug("ScanMaxLock:" + str(self.ScanMaxLock))
         MyLog.debug("StartCount:" + str(self.StartCount))
+        MyLog.debug("ScanLockFreq:" + str(self.ScanLockFreq))
 
         self.myEvent = threading.Event()
         self.mutex = threading.Lock()
@@ -69,24 +71,38 @@ class RS422Func(QThread):
         self.mtimer2 = QTimer()
         self.mtimer2.timeout.connect(self.WaitCarStatusDisable)
         self.mtimer2.start(1000)
+
+        # 2s一次，查询树莓派温度
+        self.mtimer3 = QTimer()
+        self.mtimer3.timeout.connect(self.QueryTemprature)
+        self.mtimer3.start(2000)
+        self.Temperature = 0
+
         pass
+
+    def QueryTemprature(self):
+        with open("/sys/class/thermal/thermal_zone0/temp") as tempFile:
+            res = tempFile.read()
+            res = str(int(int(res) / 1000))
+            self.Temperature = res.zfill(2)
 
 
     def LockAutoDown(self):#定时器调用，检测无车满60s后自动发送升锁指令
         for lock in SharedMemory.LockList:
             if lock.arm == 'ff':
-                if lock.car == '00':
+                if lock.car == '00':                                                #车检状态为0代表没车
                     lock.nocaron += 1
-                else:
+                else:                                                               #车检状态不为0代表有车了
                     lock.nocaron = 0
+                    lock.light = '01'
 
                 if lock.nocaron >= self.WaitCarComeTime and lock.waitcar == False:  #降锁后等待车子来停
                     lock.nocaron = 0
                     self.LockUp(lock.addr)
                     lock.carLeave = datetime.now()
                     lock.reservd2 = datetime.strftime(lock.carLeave, '%Y-%m-%d %H:%M:%S')
-                    lock.carStayTime = (str(lock.carLeave - lock.carCome).split('.'))[0]
-                    lock.reservd3 = lock.carStayTime
+                #    lock.carStayTime = (str(lock.carLeave - lock.carCome).split('.'))[0]
+                #    lock.reservd3 = lock.carStayTime
                     self.signal_Lock.emit(lock)
                     t.sleep(0.05)
 
@@ -106,12 +122,15 @@ class RS422Func(QThread):
                     if lock.arm =='55':
                         lock.carLeave = datetime.now()
                         lock.reservd2 = datetime.strftime(lock.carLeave, '%Y-%m-%d %H:%M:%S')
-                        lock.carStayTime = (str(lock.carLeave - lock.carCome).split('.'))[0]
-                        lock.reservd3 = lock.carStayTime
+                        #lock.carStayTime = (str(lock.carLeave - lock.carCome).split('.'))[0]
+                        #lock.reservd3 = lock.carStayTime
 
                         lock.licenseID = '00000000'
                         self.signal_Lock.emit(lock)
                         t.sleep(0.05)
+
+
+
                     else:#连续多次未判断到升锁到位，认为出现故障
                         lock.machine = '88'
                         pass
@@ -273,33 +292,54 @@ class RS422Func(QThread):
         SendStr = 'eb900b' + Tempstr + strcrc[2:4] + strcrc[0:2]
         MyLog.debug('LockUp:' + SendStr)
         self.WriteToPort(SendStr)
-
-
+        for lock in SharedMemory.LockList:
+            if lock.addr == Address:
+                lock.light = '00'
+        pass
 
     def LockDown2(self, str,license):
         print("LockDown2",str,license)
         for lock in SharedMemory.LockList:
             if lock.addr ==str and lock.arm == '55':
-                Address = str
-                Tempstr = Address + '051003FF00'
-                strcrc = hex(crc16_xmode(unhexlify(Tempstr)))[2:].zfill(4)
-                SendStr = 'eb900b' + Tempstr + strcrc[2:4] + strcrc[0:2]
-                MyLog.debug('LockDown:' + SendStr)
-                self.WriteToPort(SendStr)
+                if lock.isBooked == True and lock.BookedID!=license:#已被预约，且来的车辆不是预约车辆
+                    #声音提示已被预约
+                    word = 'ilang 该车位已被预约，请选择其他车位'
+                    os.system(word)
+                    MajorLog.info(word)
+                    pass
+                else:#如果没有被预约，或预约车辆段傲来，直接降锁
+                    Address = str
+                    Tempstr = Address + '051003FF00'
+                    strcrc = hex(crc16_xmode(unhexlify(Tempstr)))[2:].zfill(4)
+                    SendStr = 'eb900b' + Tempstr + strcrc[2:4] + strcrc[0:2]
+                    MyLog.debug('LockDown:' + SendStr)
+                    self.WriteToPort(SendStr)
 
-                lock.waitcar = True
-                lock.waitcartime = 0
-                lock.waitcartime2 = 0
+                    lock.isBooked = False#降锁后将预约状态清空
+                    lock.car = '00'#将预约状态取消，通知后台
 
-                lock.carCome = datetime.now()
-                lock.reservd1 = datetime.strftime(lock.carCome,'%Y-%m-%d %H:%M:%S')
-                lock.reservd2 = ''
-                lock.reservd3 = ''
-                lock.carFinallyLeave = False
+                    lock.waitcar = True
+                    lock.waitcartime = 0
+                    lock.waitcartime2 = 0
 
-                lock.licenseID = license
-                lock.StatusChanged = True
-                self.signal_Lock.emit(lock)
+                    lock.carCome = datetime.now()
+                    lock.reservd1 = datetime.strftime(lock.carCome,'%Y-%m-%d %H:%M:%S')
+                    lock.reservd2 = ''
+                    lock.reservd3 = ''
+                    lock.carFinallyLeave = False
+
+                    lock.licenseID = license
+                    lock.StatusChanged = True
+                    self.signal_Lock.emit(lock)
+
+                    lock.light='10' #降锁绿灯
+
+                    word = 'ilang 车锁已降下，请在2分钟内停车入位'
+                    os.system(word)
+                    MajorLog.info(word)
+                    pass
+            else:#多次检测到车牌，会重复到这里，每次到这里就重新等待N分钟升锁，防止反复倒车时间不够
+                lock.nocaron = 0
 
     def LockDown(self, str):
         Address = str
@@ -308,8 +348,10 @@ class RS422Func(QThread):
         SendStr = 'eb900b' + Tempstr + strcrc[2:4] + strcrc[0:2]
         MyLog.debug('LockDown:' + SendStr)
         self.WriteToPort(SendStr)
+
         for lock in SharedMemory.LockList:
             if lock.addr == Address:
+
                 lock.waitcar = True
 
                 lock.waitcartime = 0
@@ -319,11 +361,16 @@ class RS422Func(QThread):
                 lock.reservd1 = datetime.strftime(lock.carCome,'%Y-%m-%d %H:%M:%S')
                 lock.reservd2 = ''
                 lock.reservd3 = ''
-
                 lock.carFinallyLeave = False
+                lock.isBooked = False  # 降锁后将预约状态清空
+                lock.car = '00'  # 将预约状态取消，通知后台
+
+                lock.light = '10'  # 降锁绿灯
 
                 self.signal_Lock.emit(lock)
-
+                word = 'ilang "车锁已降下，请在2分钟内停车入位"'
+                os.system(word)
+                pass
 
     def LockDownAndRest(self,str):
         Address = str
@@ -432,17 +479,13 @@ def Normalchaxun(serial,self):
 
     while self.ThreadTag:                                   #Main Loop is here!
         if serial.isOpen():
-#            if self.myEvent.wait(0.1):
-#                t.sleep(0.1)
-#                print('sleep 100ms')
-
             if len(SharedMemory.LockList)>0:
                 for lock in SharedMemory.LockList:
                     self.ChaXun(lock.addr)
                     t.sleep(0.05)                           #50ms等待时间，防止查询太快导致485紊乱，在Write和Recv中已有50ms延迟，此处可以省略
             else:
                 MyLog.error('No Lock in the list from serial422.py Normalchaxun')
-            t.sleep(1)                                      #轮训间隔，每间隔N秒进行一次轮训获取连接车位锁的状态
+            t.sleep(self.ScanLockFreq)                                      #轮训间隔，每间隔N秒进行一次轮训获取连接车位锁的状态
     pass
 
 def recv(serial,self):
@@ -479,7 +522,10 @@ def recv(serial,self):
                         newLock.mode = str_back[20:22]
                         newLock.arm = str_back[22:24]
                         newLock.car = str_back[24:26]
-                        newLock.battery = str_back[26:28]
+
+                        #newLock.battery = str_back[26:28]
+                        newLock.battery = str(self.Temperature)
+
                         newLock.reservd4 = str_back[28:30]
                         newLock.sensor = str_back[30:32]
                         newLock.machine = str_back[32:34]
@@ -492,7 +538,6 @@ def recv(serial,self):
                         self.signal_newLock.emit(newLock)
                         MyLog.info('New lock detected!')
                     else:
-                        #print('Already in the list')
                         for lock in SharedMemory.LockList:
                             if lock.addr == strid:
 
@@ -504,13 +549,18 @@ def recv(serial,self):
                                     lock.arm = str_back[22:24]
                                     lock.StatusChanged = True
 
-                                if lock.car != str_back[24:26]:
-                                    lock.car = str_back[24:26]
-                                    lock.StatusChanged = True
+                                if lock.car == '55':#如果已被预约，不更新此状态，知道预约状态取消
+                                    pass
+                                else:
+                                    if lock.car != str_back[24:26]:
+                                        lock.car = str_back[24:26]
+                                        lock.StatusChanged = True
 
-                                if lock.battery != str_back[26:28]:
-                                    lock.battery = str_back[26:28]
-                                    lock.StatusChanged = True
+                            #    if lock.battery != str_back[26:28]:
+                            #        lock.battery = str_back[26:28]
+                            #        lock.StatusChanged = True
+
+                                lock.battery = str(self.Temperature)
 
                                 if lock.reservd4 != str_back[28:30]:
                                     lock.reservd4 = str_back[28:30]
@@ -526,42 +576,6 @@ def recv(serial,self):
 
                                 lock.crcH = str_back[34:36]
                                 lock.crcL = str_back[36:38]
-
-                                # if lock.mode != str_back[14:16]:
-                                #     lock.mode = str_back[14:16]
-                                #     lock.StatusChanged = True
-                                #
-                                # if lock.arm != str_back[16:18]:
-                                #     lock.arm = str_back[16:18]
-                                #     lock.StatusChanged = True
-                                #
-                                # if lock.car != str_back[18:20]:
-                                #     lock.car = str_back[18:20]
-                                #     lock.StatusChanged = True
-                                #
-                                # if lock.battery != str_back[20:22]:
-                                #     lock.battery = str_back[20:22]
-                                #     lock.StatusChanged = True
-                                #
-                                # if lock.reservd4 != str_back[22:24]:
-                                #     lock.reservd4 = str_back[22:24]
-                                #     lock.StatusChanged = True
-                                #
-                                # if lock.sensor != str_back[24:26]:
-                                #     lock.sensor = str_back[24:26]
-                                #     lock.StatusChanged = True
-                                #
-                                #
-                                # if lock.machine != str_back[26:28]:
-                                #     lock.machine = str_back[26:28]
-                                #     lock.StatusChanged = True
-                                #
-                                # lock.crcH = str_back[28:30]
-                                # lock.crcL = str_back[30:32]
-
-
-#                                if lock.StatusChanged:
-#                                    MyLog.info('RecvFromLock:' + str_back)
 
                                 self.signal_Lock.emit(lock)
             break

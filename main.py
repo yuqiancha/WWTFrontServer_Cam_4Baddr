@@ -405,7 +405,7 @@ if __name__ == '__main__':
     ex=Main()
     ex.show()
 
-#    gpio = GpioCtr()
+    gpio = GpioCtr()
 
     myTcpServer = TcpServer()
 
@@ -413,7 +413,7 @@ if __name__ == '__main__':
     rs422.ScanPort()
 
     webservice = WebServer()
-    webservice.signal.connect(rs422.LockCMDExcute)
+    webservice.signal.connect(rs422.LockCMDExcute)#后台发来的降锁指令，后续不会上传车牌号
 
     ex.signal_LockCMD.connect(rs422.LockCMDExcute)
 
