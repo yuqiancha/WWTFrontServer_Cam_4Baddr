@@ -35,5 +35,8 @@ class MyLock(object):
         self.BookedID = ''
 
         self.light = '00'                       #灯的状态，00不导通 01抬杆-红 02落杆-绿 03都接黄灯 ff无操作
+
+        self.detectlockdown = False             #检测到降锁到位
+
 class SharedMemory(object):
     LockList = []

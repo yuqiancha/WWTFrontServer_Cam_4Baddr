@@ -96,6 +96,11 @@ class RS422Func(QThread):
                     lock.nocaron = 0
                     lock.light = '01'
 
+                if lock.detectlockdown:
+                    word = 'espeak -vzh "地锁已降下，请在2分钟内停车入位"'
+                    os.system(word)
+                    lock.detectlockdown = False
+
                 if lock.nocaron >= self.WaitCarComeTime and lock.waitcar == False:  #降锁后等待车子来停
                     lock.nocaron = 0
                     self.LockUp(lock.addr)
@@ -333,10 +338,8 @@ class RS422Func(QThread):
                     self.signal_Lock.emit(lock)
 
                     lock.light='10' #降锁绿灯
+                    lock.detectlockdown = True
 
-                    word = 'espeak -vzh "地锁已降下，请在2分钟内停车入位"'
-                    os.system(word)
-                    MajorLog.info(word)
                     pass
             else:#多次检测到车牌，会重复到这里，每次到这里就重新等待N分钟升锁，防止反复倒车时间不够
                 lock.nocaron = 0
@@ -351,9 +354,7 @@ class RS422Func(QThread):
 
         for lock in SharedMemory.LockList:
             if lock.addr == Address:
-
                 lock.waitcar = True
-
                 lock.waitcartime = 0
                 lock.waitcartime2 = 0
 
@@ -366,10 +367,8 @@ class RS422Func(QThread):
                 lock.car = '00'  # 将预约状态取消，通知后台
 
                 lock.light = '10'  # 降锁绿灯
+                lock.detectlockdown = True
 
-                self.signal_Lock.emit(lock)
-                word = 'espeak -vzh "地锁已降下，请在2分钟内停车入位"'
-                os.system(word)
                 pass
 
     def LockDownAndRest(self,str):
