@@ -137,14 +137,15 @@ def RecvFromCamera(tcpClient,clientaddr,self):
                         self.signal_blue_detect.emit(str(self.cf.get("StartLoad",clientaddr[0])),Dlisence)
                         self.signal_blue_showID.emit(str(self.cf.get("StartLoad", clientaddr[0])) + ':' + Dlisence)
 
-                        word = 'ilang 非新能源车辆请勿驶入'
+                        word = 'espeak -vzh "非新能源车辆请勿驶入"'
                         os.system(word)
                         MyLogCam.info(word)
                     else:
                         MyLogCam.info(str(clientaddr[0]) + str(self.cf.get("StartLoad", clientaddr[0])) + ':' + Dlisence + DColor)
                         self.signal_blue_detect.emit(str(self.cf.get("StartLoad", clientaddr[0])), Dlisence)
                         self.signal_blue_showID.emit(str(self.cf.get("StartLoad", clientaddr[0])) + ':' + Dlisence)
-                        word = 'ilang 非新能源车辆请勿驶入'
+
+                        word = 'espeak -vzh "非新能源车辆请勿驶入"'
                         os.system(word)
                         MyLogCam.info(word)
                         pass

@@ -89,7 +89,7 @@ class RS422Func(QThread):
 
     def LockAutoDown(self):#定时器调用，检测无车满60s后自动发送升锁指令
         for lock in SharedMemory.LockList:
-            if lock.arm == 'ff':
+            if lock.arm == 'ff':                                                    #摇臂降下
                 if lock.car == '00':                                                #车检状态为0代表没车
                     lock.nocaron += 1
                 else:                                                               #车检状态不为0代表有车了
@@ -303,7 +303,7 @@ class RS422Func(QThread):
             if lock.addr ==str and lock.arm == '55':
                 if lock.isBooked == True and lock.BookedID!=license:#已被预约，且来的车辆不是预约车辆
                     #声音提示已被预约
-                    word = 'ilang 该车位已被预约，请选择其他车位'
+                    word = 'espeak -vzh "该车位已被预约，请选择其他车位"'
                     os.system(word)
                     MajorLog.info(word)
                     pass
@@ -334,7 +334,7 @@ class RS422Func(QThread):
 
                     lock.light='10' #降锁绿灯
 
-                    word = 'ilang 车锁已降下，请在2分钟内停车入位'
+                    word = 'espeak -vzh "地锁已降下，请在2分钟内停车入位"'
                     os.system(word)
                     MajorLog.info(word)
                     pass
@@ -368,7 +368,7 @@ class RS422Func(QThread):
                 lock.light = '10'  # 降锁绿灯
 
                 self.signal_Lock.emit(lock)
-                word = 'ilang "车锁已降下，请在2分钟内停车入位"'
+                word = 'espeak -vzh "地锁已降下，请在2分钟内停车入位"'
                 os.system(word)
                 pass
 

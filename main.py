@@ -14,6 +14,7 @@ from gpioctr import GpioCtr
 from os import path
 from NewCamServer import TcpServer
 from datetime import *
+import os
 
 log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logging.config')
 logging.config.fileConfig(log_file_path)
@@ -118,6 +119,8 @@ class Main(QWidget,Ui_Form):
         pass
 
     def btnResetClicked(self):
+        word = 'espeak -vzh "复位所有锁"'
+        os.system(word)
 
         self.signal_test.emit('192.168.0.17', '沪A78787')
 
