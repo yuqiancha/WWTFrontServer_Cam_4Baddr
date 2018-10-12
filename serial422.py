@@ -97,8 +97,12 @@ class RS422Func(QThread):
                     lock.light = '01'
 
                 if lock.detectlockdown:
-                    word = 'espeak -vzh "地锁已降下，请在2分钟内停车入位"'
-                    os.system(word)
+                 #   word = 'espeak -vzh "地锁已降下，请在2分钟内停车入位"'
+                 #   os.system(word)
+
+                    music_path = '/home/pi/Downloads/WWTFrontServer/lockdown.mp3'
+                    os.system('mplayer %s' % music_path)
+
                     lock.detectlockdown = False
 
                 if lock.nocaron >= self.WaitCarComeTime and lock.waitcar == False:  #降锁后等待车子来停
@@ -308,9 +312,11 @@ class RS422Func(QThread):
             if lock.addr ==str and lock.arm == '55':
                 if lock.isBooked == True and lock.BookedID!=license:#已被预约，且来的车辆不是预约车辆
                     #声音提示已被预约
-                    word = 'espeak -vzh "该车位已被预约，请选择其他车位"'
-                    os.system(word)
-                    MajorLog.info(word)
+                    music_path = '/home/pi/Downloads/WWTFrontServer/booked.mp3'
+                    os.system('mplayer %s' % music_path)
+                  #  word = 'espeak -vzh "该车位已被预约，请选择其他车位"'
+                  #  os.system(word)
+                  #  MajorLog.info(word)
                     pass
                 else:#如果没有被预约，或预约车辆段傲来，直接降锁
                     Address = str

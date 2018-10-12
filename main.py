@@ -119,8 +119,9 @@ class Main(QWidget,Ui_Form):
         pass
 
     def btnResetClicked(self):
-        word = 'espeak -vzh "复位所有锁"'
-        os.system(word)
+        music_path = '/home/pi/Downloads/WWTFrontServer/errorcar.mp3'
+        os.system('mplayer %s' % music_path)
+
 
         self.signal_test.emit('192.168.0.17', '沪A78787')
 
