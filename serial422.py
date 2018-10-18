@@ -22,7 +22,7 @@ MajorLog = logging.getLogger('ws_error_log')      #log error
 class RS422Func(QThread):
     signal_newLock = pyqtSignal(MyLock)
     signal_Lock = pyqtSignal(MyLock)
-
+    signal_ShowLockDown2 = pyqtSignal(str)
     def __init__(self):
         super(RS422Func, self).__init__()
         MyLog.info('Rs422Func init')
@@ -97,9 +97,7 @@ class RS422Func(QThread):
                     lock.light = '01'
 
                 if lock.detectlockdown:
-                 #   word = 'espeak -vzh "地锁已降下，请在2分钟内停车入位"'
-                 #   os.system(word)
-
+                    lock.light = '10'  # 降锁绿灯
                     music_path = '/home/pi/Downloads/WWTFrontServer/lockdown.mp3'
                     os.system('mplayer %s' % music_path)
 
@@ -308,6 +306,7 @@ class RS422Func(QThread):
 
     def LockDown2(self, str,license):
         print("LockDown2",str,license)
+        self.signal_ShowLockDown2("Start Sending LockDown:"+str)
         for lock in SharedMemory.LockList:
             if lock.addr ==str and lock.arm == '55':
                 if lock.isBooked == True and lock.BookedID!=license:#已被预约，且来的车辆不是预约车辆
@@ -317,6 +316,7 @@ class RS422Func(QThread):
                   #  word = 'espeak -vzh "该车位已被预约，请选择其他车位"'
                   #  os.system(word)
                   #  MajorLog.info(word)
+
                     pass
                 else:#如果没有被预约，或预约车辆段傲来，直接降锁
                     Address = str
@@ -325,6 +325,8 @@ class RS422Func(QThread):
                     SendStr = 'eb900b' + Tempstr + strcrc[2:4] + strcrc[0:2]
                     MyLog.debug('LockDown:' + SendStr)
                     self.WriteToPort(SendStr)
+
+                    self.signal_ShowLockDown2("LockDownCMD Success！")
 
                     lock.isBooked = False#降锁后将预约状态清空
                     lock.car = '00'#将预约状态取消，通知后台
@@ -343,7 +345,7 @@ class RS422Func(QThread):
                     lock.StatusChanged = True
                     self.signal_Lock.emit(lock)
 
-                    lock.light='10' #降锁绿灯
+                   # lock.light='10' #降锁绿灯
                     lock.detectlockdown = True
 
                     pass
@@ -372,7 +374,7 @@ class RS422Func(QThread):
                 lock.isBooked = False  # 降锁后将预约状态清空
                 lock.car = '00'  # 将预约状态取消，通知后台
 
-                lock.light = '10'  # 降锁绿灯
+             #   lock.light = '10'  # 降锁绿灯
                 lock.detectlockdown = True
 
                 pass

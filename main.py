@@ -272,6 +272,10 @@ class Main(QWidget,Ui_Form):
             self.textBrowser_Cam.clear()
             pass
 
+    def ShowLockDown3(self,str1):
+        self.textBrowser_Cam.append("Temp--"+str1)
+        pass
+
     def ShowNewLock(self,MyLock):
         row_count = self.tableWidget.rowCount();
         self.tableWidget.insertRow(row_count)
@@ -423,6 +427,7 @@ if __name__ == '__main__':
 
     rs422.signal_Lock.connect(ex.ShowLock)
     rs422.signal_newLock.connect(ex.ShowNewLock)
+    rs422.signal_ShowLockDown2.connect(ex.ShowLockDown3)
 
     myTcpServer.signal_detect.connect(rs422.LockCMDExcute2)
     myTcpServer.signal_showID.connect(ex.ShowID)
