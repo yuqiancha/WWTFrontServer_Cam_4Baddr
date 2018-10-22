@@ -306,7 +306,7 @@ class RS422Func(QThread):
 
     def LockDown2(self, str,license):
         print("LockDown2",str,license)
-        self.signal_ShowLockDown2("Start Sending LockDown:"+str)
+        self.signal_ShowLockDown2.emit("Start Sending LockDown:"+str)
         for lock in SharedMemory.LockList:
             if lock.addr ==str and lock.arm == '55':
                 if lock.isBooked == True and lock.BookedID!=license:#已被预约，且来的车辆不是预约车辆
@@ -326,7 +326,7 @@ class RS422Func(QThread):
                     MyLog.debug('LockDown:' + SendStr)
                     self.WriteToPort(SendStr)
 
-                    self.signal_ShowLockDown2("LockDownCMD Success！")
+                    self.signal_ShowLockDown2.emit("LockDownCMD Success！")
 
                     lock.isBooked = False#降锁后将预约状态清空
                     lock.car = '00'#将预约状态取消，通知后台
