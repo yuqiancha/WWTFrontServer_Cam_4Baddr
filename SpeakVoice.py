@@ -8,7 +8,6 @@ MajorLog = logging.getLogger('ws_error_log')      #log error
 class SpeakVoice(QThread):
     def __init__(self):
         super(SpeakVoice,self).__init__()
-        MajorLog.debug(self.StrID)
 
     def Voice(self,str):
         if str=='booked':
