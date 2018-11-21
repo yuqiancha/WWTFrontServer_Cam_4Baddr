@@ -60,15 +60,15 @@ class WebServer(QThread):
         self.addr = addr
         self.licenseId = licenseID
         self.postTag = True
-    #    self.signal_showDebug.emit("SendLiscenseToServer 1111---"+addr+"---"+licenseID)
         for lock in SharedMemory.LockList:
             if lock.addr == addr and lock.arm == '55':
-            #    self.signal_showDebug.emit("bookedid-" + lock.BookedID + "---" + licenseID)
-                if lock.isBooked == True and lock.BookedID == '0'+licenseID:  # 已被预约，且来的车辆就是预约车辆
-             #       self.signal_showDebug.emit("SendLiscenseToServer signal_booked---!!")
+                if lock.isBooked == True and lock.BookedID == '0'+licenseID:            # 已被预约，且来的车辆就是预约车辆
                     self.signal_booked.emit('05'+addr,'0'+licenseID)
+                elif lock.isBooked ==True and lock.BookedID!='0'+licenseID:             #已被预约，来的车辆不是预约车辆
+                    music_path = '/home/pi/Downloads/WWTFrontServer/booked.mp3'
+                    os.system('mplayer %s' % music_path)
+                else:                                                                   #车位未被预约，根据后台反馈结果来降锁
                     pass
-
 
         pass
 
@@ -219,6 +219,9 @@ def ServerOn(conn,self):
                 elif data1 == 'Heart' or data1 == 'heart':
                     self.rebootwait = 0  # 收到心跳则将rebootwait计数重置为0
                     pass
+                elif data1 =='blueheart':#判断非新能源车牌
+                    music_path = '/home/pi/Downloads/WWTFrontServer/errorcar2.mp3'
+                    os.system('mplayer %s' % music_path)
                 else:
                     if len(data1) >= 10:
                         if data1[0:4] == 'eb90' and data1[4:12] == '00000000':  # 获取全部锁状态、开关电源、重启现场、获取日志、获取数据

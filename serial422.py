@@ -314,10 +314,6 @@ class RS422Func(QThread):
                     #声音提示已被预约
                     music_path = '/home/pi/Downloads/WWTFrontServer/booked.mp3'
                     os.system('mplayer %s' % music_path)
-                  #  word = 'espeak -vzh "该车位已被预约，请选择其他车位"'
-                  #  os.system(word)
-                  #  MajorLog.info(word)
-
                     pass
                 else:#如果没有被预约，或预约车辆段傲来，直接降锁
                     Address = str
