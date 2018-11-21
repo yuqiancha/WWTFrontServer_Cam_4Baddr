@@ -14,6 +14,7 @@ from gpioctr import GpioCtr
 from os import path
 from NewCamServer import TcpServer
 from datetime import *
+from SpeakVoice import SpeakVoice
 import os
 
 log_file_path = path.join(path.dirname(path.abspath(__file__)), 'logging.config')
@@ -419,6 +420,7 @@ if __name__ == '__main__':
     ex.show()
 
     gpio = GpioCtr()
+    myspeak = SpeakVoice()
 
     myTcpServer = TcpServer()
 
@@ -428,14 +430,15 @@ if __name__ == '__main__':
     webservice = WebServer()
     webservice.signal.connect(rs422.LockCMDExcute)#后台发来的降锁指令，后续不会上传车牌号
     webservice.signal_booked.connect(rs422.LockCMDExcute2)#预约车辆到来
-
     webservice.signal_showDebug.connect(ex.ShowDebug)
+    webservice.signal_voice.connect(myspeak.Voice)
 
     ex.signal_LockCMD.connect(rs422.LockCMDExcute)
 
     rs422.signal_Lock.connect(ex.ShowLock)
     rs422.signal_newLock.connect(ex.ShowNewLock)
     rs422.signal_ShowLockDown2.connect(ex.ShowLockDown3)
+    rs422.signal_voice.connect(myspeak.Voice)
 
     myTcpServer.signal_detect.connect(rs422.LockCMDExcute2)
 

@@ -23,6 +23,7 @@ class RS422Func(QThread):
     signal_newLock = pyqtSignal(MyLock)
     signal_Lock = pyqtSignal(MyLock)
     signal_ShowLockDown2 = pyqtSignal(str)
+    signal_voice = pyqtSignal(str)
     def __init__(self):
         super(RS422Func, self).__init__()
         MyLog.info('Rs422Func init')
@@ -98,8 +99,9 @@ class RS422Func(QThread):
 
                 if lock.detectlockdown:
                     lock.light = '10'  # 降锁绿灯
-                    music_path = '/home/pi/Downloads/WWTFrontServer/lockdown.mp3'
-                    os.system('mplayer %s' % music_path)
+                    self.signal_voice.emit('lockdown')
+                 #   music_path = '/home/pi/Downloads/WWTFrontServer/lockdown.mp3'
+                 #   os.system('mplayer %s' % music_path)
 
                     lock.detectlockdown = False
 
@@ -312,8 +314,9 @@ class RS422Func(QThread):
             if lock.addr ==str and lock.arm == '55':
                 if lock.isBooked == True and lock.BookedID!=license:#已被预约，且来的车辆不是预约车辆
                     #声音提示已被预约
-                    music_path = '/home/pi/Downloads/WWTFrontServer/booked.mp3'
-                    os.system('mplayer %s' % music_path)
+                    self.signal_voice.emit('booked')
+                #    music_path = '/home/pi/Downloads/WWTFrontServer/booked.mp3'
+                #    os.system('mplayer %s' % music_path)
                     pass
                 else:#如果没有被预约，或预约车辆段傲来，直接降锁
                     Address = str

@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="642548fd-aa82-44ce-908f-3f82181b0a83" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/NewCamServer.py" afterPath="$PROJECT_DIR$/NewCamServer.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/WebService.py" afterPath="$PROJECT_DIR$/WebService.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/main.py" afterPath="$PROJECT_DIR$/main.py" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/serial422.py" afterPath="$PROJECT_DIR$/serial422.py" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -18,8 +19,8 @@
       <file leaf-file-name="main.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/main.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4020">
-              <caret line="284" column="48" lean-forward="false" selection-start-line="284" selection-start-column="48" selection-end-line="284" selection-end-column="48" />
+            <state relative-caret-position="483">
+              <caret line="441" column="0" lean-forward="false" selection-start-line="441" selection-start-column="0" selection-end-line="441" selection-end-column="0" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -30,8 +31,8 @@
       <file leaf-file-name="NewCamServer.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/NewCamServer.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="529">
-              <caret line="148" column="0" lean-forward="false" selection-start-line="148" selection-start-column="0" selection-end-line="149" selection-end-column="60" />
+            <state relative-caret-position="423">
+              <caret line="137" column="115" lean-forward="false" selection-start-line="137" selection-start-column="115" selection-end-line="137" selection-end-column="115" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -39,12 +40,26 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WebService.py" pinned="false" current-in-tab="true">
+      <file leaf-file-name="SpeakVoice.py" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/SpeakVoice.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="240">
+              <caret line="16" column="29" lean-forward="true" selection-start-line="16" selection-start-column="29" selection-end-line="16" selection-end-column="29" />
+              <folding>
+                <element signature="e#0#9#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WebService.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/WebService.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2639">
-              <caret line="219" column="65" lean-forward="true" selection-start-line="219" selection-start-column="65" selection-end-line="219" selection-end-column="65" />
-              <folding />
+            <state relative-caret-position="76">
+              <caret line="216" column="24" lean-forward="true" selection-start-line="216" selection-start-column="24" selection-end-line="216" selection-end-column="24" />
+              <folding>
+                <element signature="e#0#18#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -52,22 +67,10 @@
       <file leaf-file-name="serial422.py" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/serial422.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="105">
-              <caret line="314" column="0" lean-forward="false" selection-start-line="314" selection-start-column="0" selection-end-line="315" selection-end-column="56" />
+            <state relative-caret-position="156">
+              <caret line="100" column="45" lean-forward="false" selection-start-line="100" selection-start-column="45" selection-end-line="100" selection-end-column="45" />
               <folding>
                 <element signature="e#0#24#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="testVoice.py" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/testVoice.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="13" column="1" lean-forward="false" selection-start-line="13" selection-start-column="1" selection-end-line="14" selection-end-column="45" />
-              <folding>
-                <element signature="e#143#152#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -94,9 +97,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>ff</find>
-      <find>reboot</find>
-      <find>nocar</find>
       <find>lock.car</find>
       <find>MajorLog</find>
       <find>预约</find>
@@ -124,6 +124,9 @@
       <find>signal_showDebug</find>
       <find>light</find>
       <find>heart</find>
+      <find>MyLog2</find>
+      <find>signal_voice</find>
+      <find>os.</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -142,16 +145,17 @@
         <option value="$PROJECT_DIR$/Data.py" />
         <option value="$PROJECT_DIR$/testVoice.py" />
         <option value="$PROJECT_DIR$/NewCamServer.py" />
+        <option value="$PROJECT_DIR$/SpeakVoice.py" />
         <option value="$PROJECT_DIR$/main.py" />
-        <option value="$PROJECT_DIR$/serial422.py" />
         <option value="$PROJECT_DIR$/WebService.py" />
+        <option value="$PROJECT_DIR$/serial422.py" />
       </list>
     </option>
   </component>
-  <component name="ProjectFrameBounds" extendedState="6">
+  <component name="ProjectFrameBounds">
     <option name="y" value="23" />
     <option name="width" value="1440" />
-    <option name="height" value="797" />
+    <option name="height" value="800" />
   </component>
   <component name="ProjectLevelVcsManager">
     <ConfirmationsSetting value="1" id="Add" />
@@ -171,7 +175,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -183,7 +187,7 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -286,7 +290,7 @@
     <servers />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="23" width="1440" height="803" extended-state="6" />
+    <frame x="0" y="23" width="1440" height="800" extended-state="0" />
     <layout>
       <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
@@ -318,13 +322,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/WebService.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1650">
-          <caret line="122" column="66" lean-forward="false" selection-start-line="122" selection-start-column="66" selection-end-line="122" selection-end-column="66" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/FrontServerID">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -596,16 +593,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/testVoice.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="13" column="1" lean-forward="false" selection-start-line="13" selection-start-column="1" selection-end-line="14" selection-end-column="45" />
-          <folding>
-            <element signature="e#143#152#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/logging.config">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="211">
@@ -621,30 +608,40 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4020">
-          <caret line="284" column="48" lean-forward="false" selection-start-line="284" selection-start-column="48" selection-end-line="284" selection-end-column="48" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/NewCamServer.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="529">
-          <caret line="148" column="0" lean-forward="false" selection-start-line="148" selection-start-column="0" selection-end-line="149" selection-end-column="60" />
+        <state relative-caret-position="423">
+          <caret line="137" column="115" lean-forward="false" selection-start-line="137" selection-start-column="115" selection-end-line="137" selection-end-column="115" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="483">
+          <caret line="441" column="0" lean-forward="false" selection-start-line="441" selection-start-column="0" selection-end-line="441" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/testVoice.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="0" lean-forward="false" selection-start-line="10" selection-start-column="0" selection-end-line="11" selection-end-column="11" />
+          <folding>
+            <element signature="e#143#152#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/serial422.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="314" column="0" lean-forward="false" selection-start-line="314" selection-start-column="0" selection-end-line="315" selection-end-column="56" />
+        <state relative-caret-position="156">
+          <caret line="100" column="45" lean-forward="false" selection-start-line="100" selection-start-column="45" selection-end-line="100" selection-end-column="45" />
           <folding>
             <element signature="e#0#24#0" expanded="true" />
           </folding>
@@ -653,9 +650,21 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/WebService.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2639">
-          <caret line="219" column="65" lean-forward="true" selection-start-line="219" selection-start-column="65" selection-end-line="219" selection-end-column="65" />
-          <folding />
+        <state relative-caret-position="76">
+          <caret line="216" column="24" lean-forward="true" selection-start-line="216" selection-start-column="24" selection-end-line="216" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/SpeakVoice.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="29" lean-forward="true" selection-start-line="16" selection-start-column="29" selection-end-line="16" selection-end-column="29" />
+          <folding>
+            <element signature="e#0#9#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

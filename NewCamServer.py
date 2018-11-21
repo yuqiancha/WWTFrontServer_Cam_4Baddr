@@ -136,19 +136,10 @@ def RecvFromCamera(tcpClient,clientaddr,self):
                         MyLogCam.info(str(clientaddr[0])+str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence+"蓝")
                         self.signal_blue_detect.emit(str(self.cf.get("StartLoad",clientaddr[0])),Dlisence)
                         self.signal_blue_showID.emit(str(self.cf.get("StartLoad", clientaddr[0])) + ':' + Dlisence)
-
-                        music_path = '/home/pi/Downloads/WWTFrontServer/errorcar.mp3'
-                        os.system('mplayer %s' % music_path)
-
-
                     else:
                         MyLogCam.info(str(clientaddr[0]) + str(self.cf.get("StartLoad", clientaddr[0])) + ':' + Dlisence + DColor)
                         self.signal_blue_detect.emit(str(self.cf.get("StartLoad", clientaddr[0])), Dlisence)
                         self.signal_blue_showID.emit(str(self.cf.get("StartLoad", clientaddr[0])) + ':' + Dlisence)
-
-                        music_path = '/home/pi/Downloads/WWTFrontServer/errorcar.mp3'
-                        os.system('mplayer %s' % music_path)
-
                         pass
 
         else:

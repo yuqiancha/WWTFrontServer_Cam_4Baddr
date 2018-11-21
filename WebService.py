@@ -20,7 +20,7 @@ class WebServer(QThread):
     signal = pyqtSignal(str)
     signal_booked = pyqtSignal(str,str)
     signal_showDebug = pyqtSignal(str)
-
+    signal_voice = pyqtSignal(str)
     def __init__(self):
         super(WebServer,self).__init__()
         MyLog2.debug('WebService in')
@@ -65,8 +65,9 @@ class WebServer(QThread):
                 if lock.isBooked == True and lock.BookedID == '0'+licenseID:            # 已被预约，且来的车辆就是预约车辆
                     self.signal_booked.emit('05'+addr,'0'+licenseID)
                 elif lock.isBooked ==True and lock.BookedID!='0'+licenseID:             #已被预约，来的车辆不是预约车辆
-                    music_path = '/home/pi/Downloads/WWTFrontServer/booked.mp3'
-                    os.system('mplayer %s' % music_path)
+                    self.signal_voice.emit('booked')
+                #    music_path = '/home/pi/Downloads/WWTFrontServer/booked.mp3'
+                #    os.system('mplayer %s' % music_path)
                 else:                                                                   #车位未被预约，根据后台反馈结果来降锁
                     pass
 
@@ -220,8 +221,9 @@ def ServerOn(conn,self):
                     self.rebootwait = 0  # 收到心跳则将rebootwait计数重置为0
                     pass
                 elif data1 =='blueheart':#判断非新能源车牌
-                    music_path = '/home/pi/Downloads/WWTFrontServer/errorcar2.mp3'
-                    os.system('mplayer %s' % music_path)
+                    self.signal_voice.emit('errorcar')
+                #    music_path = '/home/pi/Downloads/WWTFrontServer/errorcar2.mp3'
+                #    os.system('mplayer %s' % music_path)
                 else:
                     if len(data1) >= 10:
                         if data1[0:4] == 'eb90' and data1[4:12] == '00000000':  # 获取全部锁状态、开关电源、重启现场、获取日志、获取数据
