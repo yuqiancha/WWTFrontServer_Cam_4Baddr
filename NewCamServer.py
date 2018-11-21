@@ -140,9 +140,7 @@ def RecvFromCamera(tcpClient,clientaddr,self):
                         music_path = '/home/pi/Downloads/WWTFrontServer/errorcar.mp3'
                         os.system('mplayer %s' % music_path)
 
-                     #   word = 'espeak -vzh "非新能源车辆请勿驶入"'
-                     #   os.system(word)
-                     #   MyLogCam.info(word)
+
                     else:
                         MyLogCam.info(str(clientaddr[0]) + str(self.cf.get("StartLoad", clientaddr[0])) + ':' + Dlisence + DColor)
                         self.signal_blue_detect.emit(str(self.cf.get("StartLoad", clientaddr[0])), Dlisence)

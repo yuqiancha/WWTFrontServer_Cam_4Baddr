@@ -272,6 +272,11 @@ class Main(QWidget,Ui_Form):
             self.textBrowser_Cam.clear()
             pass
 
+    def ShowDebug(self,str1):
+        print("ShowDebug:"+str1)
+        self.textBrowser_Cam.append("ShowDebug--"+str1)
+        pass
+
     def ShowLockDown3(self,str1):
         self.textBrowser_Cam.append("Temp--"+str1)
         pass
@@ -422,6 +427,9 @@ if __name__ == '__main__':
 
     webservice = WebServer()
     webservice.signal.connect(rs422.LockCMDExcute)#后台发来的降锁指令，后续不会上传车牌号
+    webservice.signal_booked.connect(rs422.LockCMDExcute2)#预约车辆到来
+
+    webservice.signal_showDebug.connect(ex.ShowDebug)
 
     ex.signal_LockCMD.connect(rs422.LockCMDExcute)
 
@@ -430,6 +438,7 @@ if __name__ == '__main__':
     rs422.signal_ShowLockDown2.connect(ex.ShowLockDown3)
 
     myTcpServer.signal_detect.connect(rs422.LockCMDExcute2)
+
     myTcpServer.signal_showID.connect(ex.ShowID)
     myTcpServer.signal_blue_detect.connect(webservice.SendLiscenseToServer)
     myTcpServer.signal_blue_showID.connect(ex.ShowID2)

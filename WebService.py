@@ -18,6 +18,9 @@ MyLogCam = logging.getLogger('ws_cam_log')          #cam log
 
 class WebServer(QThread):
     signal = pyqtSignal(str)
+    signal_booked = pyqtSignal(str,str)
+    signal_showDebug = pyqtSignal(str)
+
     def __init__(self):
         super(WebServer,self).__init__()
         MyLog2.debug('WebService in')
@@ -57,6 +60,16 @@ class WebServer(QThread):
         self.addr = addr
         self.licenseId = licenseID
         self.postTag = True
+    #    self.signal_showDebug.emit("SendLiscenseToServer 1111---"+addr+"---"+licenseID)
+        for lock in SharedMemory.LockList:
+            if lock.addr == addr and lock.arm == '55':
+            #    self.signal_showDebug.emit("bookedid-" + lock.BookedID + "---" + licenseID)
+                if lock.isBooked == True and lock.BookedID == '0'+licenseID:  # 已被预约，且来的车辆就是预约车辆
+             #       self.signal_showDebug.emit("SendLiscenseToServer signal_booked---!!")
+                    self.signal_booked.emit('05'+addr,'0'+licenseID)
+                    pass
+
+
         pass
 
     def close(self):
@@ -247,7 +260,8 @@ def ServerOn(conn,self):
                                                 item.isBooked = True
                                                 item.BookedID = lisenceID
                                                 item.car = '55'
-                                                item.light = '11'
+                                            #    item.light = '11'
+                                                item.light = '01'
                                         pass
                                     elif cmd =='00':#取消预约
                                         for item in SharedMemory.LockList:
@@ -255,6 +269,7 @@ def ServerOn(conn,self):
                                                 item.isBooked = False
                                                 item.BookedID = ''
                                                 item.car = '00'
+                                            #    item.light = '01'
                                                 item.light = '00'
                                         pass
                                     else:#异常状态

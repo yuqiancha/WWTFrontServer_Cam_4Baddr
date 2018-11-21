@@ -202,6 +202,7 @@ class RS422Func(QThread):
 
     def LockCMDExcute2(self, str,license):
         MyLog.debug("触发Lockcmdexcute2----"+license)
+
         if len(str) == 10:
             if str[0:2] == '03':
                 self.LockReset(str[2:10])
