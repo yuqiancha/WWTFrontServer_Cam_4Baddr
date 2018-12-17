@@ -135,12 +135,14 @@ def ServerOn(conn,self):
                         ErrCodeValue += 16
                     if item.machine == 'ff':  # 摇臂破坏
                         ErrCodeValue += 32
-                    if item.machine == '88':  # 电机连轴故障
+                    if item.machine == '88':  # 电机连轴故障ß
                         ErrCodeValue += 64
 
                     item.ErrorCode = hex(ErrCodeValue)[2:].zfill(2)  # 将摇臂故障根据协议转化为发给Web的值
-
+                    
                     EPDUStr += 'eb90' + item.addr + status + item.car + item.battery + item.ErrorCode + self.licenseId.zfill(8)  # 'eb90'+地址+状态+电量+异常代码+'AAAA09d7'
+                    item.licenseID = self.licenseId
+
                     pass
             SendToWebstr = '1ACF' + self.StrID + str(EPDUNums).zfill(2) + EPDUStr
             MyLogCam.info('SendLiscenseToServer22--' + self.addr + '-' + self.licenseId + '-' + SendToWebstr)
@@ -148,7 +150,7 @@ def ServerOn(conn,self):
             self.requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/checkNewEnergy"
             self.headerdata = {"Content-type": "application/json"}
             self.sendData = {"param": SendToWebstr}
-            pass
+            passß
         else:
             for item in SharedMemory.LockList:
                 if item.StatusChanged:
