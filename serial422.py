@@ -511,12 +511,12 @@ def recv(serial,self):
         else:
         #    print(data)
             str_back = str(hexlify(data), "utf-8")
-     #       MyLog.debug('RecvFromLock:' + str_back)
+            MyLog.info('RecvFromLock:' + str_back)
             if len(str_back)==38:
                 if str_back[0:6]=='eb9010':
                     #strid = str_back[6:8]
                     strid = str_back[6:14]
-                    MyLog.info('RecvFromLock:' + str_back)
+                    #MyLog.info('RecvFromLock:' + str_back)
                     if strid not in stridList:
                         stridList.append(strid)
                         #print('Not in the list and Add on')

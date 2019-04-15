@@ -135,7 +135,7 @@ def ServerOn(conn,self):
                         ErrCodeValue += 16
                     if item.machine == 'ff':  # 摇臂破坏
                         ErrCodeValue += 32
-                    if item.machine == '88':  # 电机连轴故障ß
+                    if item.machine == '88':  # 电机连轴故障
                         ErrCodeValue += 64
 
                     item.ErrorCode = hex(ErrCodeValue)[2:].zfill(2)  # 将摇臂故障根据协议转化为发给Web的值
