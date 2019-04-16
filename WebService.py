@@ -150,7 +150,7 @@ def ServerOn(conn,self):
             self.requrl = "https://www.bohold.cn/wwt-services-external/restful/server/position/secure/checkNewEnergy"
             self.headerdata = {"Content-type": "application/json"}
             self.sendData = {"param": SendToWebstr}
-            pass
+            passß
         else:
             for item in SharedMemory.LockList:
                 if item.StatusChanged:
