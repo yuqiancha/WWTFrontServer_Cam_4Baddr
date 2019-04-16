@@ -2,3 +2,6 @@ Log/*
 *.pyc
 *.xml
 .idea/workspace.xml
+.idea/misc.xml
+.idea/workspace.xml
+.idea/WWTFrontServer_Cam_4Baddr.iml

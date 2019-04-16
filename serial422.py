@@ -511,7 +511,7 @@ def recv(serial,self):
         else:
         #    print(data)
             str_back = str(hexlify(data), "utf-8")
-        #    MyLog.info('RecvFromLock:' + str_back)
+            #MyLog.info('RecvFromLock:' + str_back)
             if len(str_back)==38:
                 if str_back[0:6]=='eb9010':
                     #strid = str_back[6:8]
@@ -585,9 +585,6 @@ def recv(serial,self):
                                 lock.crcL = str_back[36:38]
 
                                 self.signal_Lock.emit(lock)
-			else:
-				MyLog.info('RecvFromLock But Not Len==38:' + str_back)
-				pass
             break
         t.sleep(0.05)
 
