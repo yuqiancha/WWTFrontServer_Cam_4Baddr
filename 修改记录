@@ -12,3 +12,6 @@ main.py WebService.py中的from import去掉GPIO
 2018-07-01:此程序工作环境为唯一ID（4Byte)的锁以及摄像机联动
 Configuration.ini中增加锁和摄像机的绑定关系
 NewCamServer.py为开启TCPServer，监听摄像机连接并接收摄像机的识别结果
+
+2019-10-29：
+增加混动车牌不降锁功能，Debug

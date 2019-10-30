@@ -124,13 +124,16 @@ def RecvFromCamera(tcpClient,clientaddr,self):
                     if DColor=='绿色' or DColor=='绿':
                         MyLogCam.info(str(clientaddr[0])+str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence+"绿")
 
-                        timenow = int(time.time())
-                        timeSpent = timenow - timelast
-                        timelast = timenow
+                        if Dlisence[0:2]=='沪AF':
+                            MyLogCam.info("混动绿牌不降低锁")
+                        else:
+                            timenow = int(time.time())
+                            timeSpent = timenow - timelast
+                            timelast = timenow
 
-                        if timeSpent > 5:
-                            self.signal_detect.emit('05'+ str(self.cf.get("StartLoad",clientaddr[0])),Dlisence)
-                            self.signal_showID.emit(str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence)
+                            if timeSpent > 5:
+                                self.signal_detect.emit('05'+ str(self.cf.get("StartLoad",clientaddr[0])),Dlisence)
+                                self.signal_showID.emit(str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence)
 
                     elif DColor =='蓝色' or DColor=='蓝':
                         MyLogCam.info(str(clientaddr[0])+str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence+"蓝")
