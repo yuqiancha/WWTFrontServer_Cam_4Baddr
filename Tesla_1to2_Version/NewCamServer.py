@@ -84,27 +84,36 @@ def RecvFromCamera(tcpClient, clientaddr, self):
 
     lastLightStatus = 'ff'
 
+    LeftLight = 'ff'
+    RightLight = 'ff'
+
+    LastLeftStatus ='ff'
+    LastRightStatus ='ff'
+
     while self.ThreadTag:
 
         # 如果需要控制灯光，在接收前发送一次
         # 同时判断2个锁，只要有一个处于降锁无车，就绿灯
         for item in SharedMemory.LockList:
             if item.addr == str(self.cf.get("StartLoad", clientaddr[0]+"_L")):
-                if item.light == 'ff' or item.light == lastLightStatus:
-                    pass
-                else:
-                    cmdstr = '1ACFCD' + item.light + '09D7'
-                    tcpClient.send(cmdstr.encode('utf-8'))
-                    lastLightStatus = item.light  # 把此次状态记录，下次还是相同状态则不发送
-                    item.light = 'ff'
+                LeftLight = item.light
+
             if item.addr == str(self.cf.get("StartLoad", clientaddr[0]+"_R")):
-                if item.light == 'ff' or item.light == lastLightStatus:
+                RightLight = item.light
+
+            if LastRightStatus == RightLight and LastLeftStatus == LeftLight:
+                pass
+            else:
+                if LeftLight == '10' or RightLight == '10':           # 左右只要有一个处于降锁无车状态就是绿灯
+                    tcpClient.send('1ACFCD1009D7'.encode('utf-8'))
+                elif LeftLight == '01' and RightLight == '01':        # 左右只要全部处于降锁有车状态就是红灯
+                    tcpClient.send('1ACFCD0109D7'.encode('utf-8'))
+                else:                                                 # 其余状态不亮
+                    tcpClient.send('1ACFCD0109D7'.encode('utf-8'))
                     pass
-                else:
-                    cmdstr = '1ACFCD' + item.light + '09D7'
-                    tcpClient.send(cmdstr.encode('utf-8'))
-                    lastLightStatus = item.light  # 把此次状态记录，下次还是相同状态则不发送
-                    item.light = 'ff'
+                LastLeftStatus = LeftLight
+                LastRightStatus = RightLight
+
 
         RecvStr = ''
         try:

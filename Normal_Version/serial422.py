@@ -138,13 +138,11 @@ class RS422Func(QThread):
                         self.signal_Lock.emit(lock)
                         t.sleep(0.05)
 
-
-
-                    else:#连续多次未判断到升锁到位，认为出现故障
+                    else:   # 连续多次未判断到升锁到位，认为出现故障
                         lock.machine = '88'
                         pass
 
-            if lock.arm == '55' or lock.arm =='00':
+            if lock.arm == '55' or lock.arm == '00':
                 lock.nocaron = 0
         pass
 
