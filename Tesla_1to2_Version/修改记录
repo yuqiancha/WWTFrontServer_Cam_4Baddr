@@ -18,3 +18,7 @@ NewCamServer.py为开启TCPServer，监听摄像机连接并接收摄像机的�
 
 2020-03-11：
 针对特斯拉一坨二，修改一个版本，车标识别
+
+2020-03-14：
+--Tesla_1to2_Version_TestV0.3--
+针对特斯拉一拖二版本，修改了bug,主要是配置文件和NewCamServer.py

@@ -109,7 +109,7 @@ def RecvFromCamera(tcpClient, clientaddr, self):
                 elif LeftLight == '01' and RightLight == '01':        # 左右只要全部处于降锁有车状态就是红灯
                     tcpClient.send('1ACFCD0109D7'.encode('utf-8'))
                 else:                                                 # 其余状态不亮
-                    tcpClient.send('1ACFCD0109D7'.encode('utf-8'))
+                    tcpClient.send('1ACFCD0009D7'.encode('utf-8'))
                     pass
                 LastLeftStatus = LeftLight
                 LastRightStatus = RightLight
@@ -128,32 +128,32 @@ def RecvFromCamera(tcpClient, clientaddr, self):
         if len(data) >= 18:
             if data == 'EB90A5FFFFFFFF09D7':
                 pass
-            elif data[0:4] == 'EB90':
-                a1 = str.find('F1F')
-                a2 = str.find('F2F')
-                a3 = str.find('F3F')
-                a4 = str.find('F4F')
-                a5 = str.find('F5F')
-                a6 = str.find('F6F')
-                a7 = str.find('F7F')
-                a8 = str.find('F8F')
+            elif data[0:6] == 'EB90A1':
+                a1 = data.find('F1F')
+                a2 = data.find('F2F')
+                a3 = data.find('F3F')
+                a4 = data.find('F4F')
+                a5 = data.find('F5F')
+                a6 = data.find('F6F')
+                a7 = data.find('F7F')
+                a8 = data.find('F8F')
                 # 初始化DX1和DX2
                 self.DX1 = 0
                 self.DX2 = 0
                 if a1 != -1 and a2 != -1 and a2 - a1 > 3:
-                    self.Dlisence = str[a1 + 3:a2]
+                    self.Dlisence = data[a1 + 3:a2]
                 if a2 != -1 and a3 != -1 and a3 - a2 > 3:
-                    self.DColor = str[a2 + 3:a3]
+                    self.DColor = data[a2 + 3:a3]
                 if a3 != -1 and a4 != -1 and a4 - a3 > 3:
-                    self.DCarFlag = str[a3 + 3:a4]
+                    self.DCarFlag = data[a3 + 3:a4]
                 if a4 != -1 and a5 != -1 and a5 - a4 > 3:
-                    self.DX1 = str[a4 + 3:a5]
+                    self.DX1 = data[a4 + 3:a5]
                 if a5 != -1 and a6 != -1 and a6 - a5 > 3:
-                    self.DY1 = str[a5 + 3:a6]
+                    self.DY1 = data[a5 + 3:a6]
                 if a6 != -1 and a7 != -1 and a7 - a6 > 3:
-                    self.DX2 = str[a6 + 3:a7]
+                    self.DX2 = data[a6 + 3:a7]
                 if a7 != -1 and a8 != -1 and a8 - a7 > 3:
-                    self.DY2 = str[a7 + 3:a8]
+                    self.DY2 = data[a7 + 3:a8]
                 print(self.Dlisence + ',' + self.DColor + ',' + self.DCarFlag +
                       ',' + self.DX1 + ',' + self.DY1 + ',' + self.DX2 + ',' + self.DY2)
 
@@ -163,16 +163,17 @@ def RecvFromCamera(tcpClient, clientaddr, self):
                     # 发送日志显示
                     MyLogCam.info(
                         str(clientaddr[0]) + "-" + str(XValue) + "-" + str(
-                            self.cf.get("StartLoad", clientaddr[0])) + ':' + self.Dlisence)
+                            self.cf.get("StartLoad", clientaddr[0] + "_Judge")) + ':' + self.Dlisence)
 
                     # 中轴判断线
-                    JudgeValue = self.cf.getint("StartLoad", clientaddr[0]+'_Judge')
+                    JudgeValue = self.cf.getint("StartLoad", clientaddr[0] + '_Judge')
 
                     if JudgeValue >= XValue > 0:
                         timenow = int(time.time())
                         timeSpent = timenow - timelast
                         timelast = timenow
                         if timeSpent > 5:
+                            print('05' + str(self.cf.get("StartLoad", clientaddr[0] + "_L")))
                             self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0]+"_L")), self.Dlisence)
                             self.signal_showID.emit(str(self.cf.get("StartLoad", clientaddr[0]+"_L")) + ':' + self.Dlisence)
                     elif 1920 >= XValue > JudgeValue:
@@ -180,7 +181,8 @@ def RecvFromCamera(tcpClient, clientaddr, self):
                         timeSpent = timenow - timelast
                         timelast = timenow
                         if timeSpent > 5:
-                            self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0])+"_R"), self.Dlisence)
+                            print('05' + str(self.cf.get("StartLoad", clientaddr[0] + "_R")))
+                            self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0]+"_R")), self.Dlisence)
                             self.signal_showID.emit(str(self.cf.get("StartLoad", clientaddr[0]+"_R")) + ':' + self.Dlisence)
                     else:
                         MyLogCam.info("Error XValue Range")
