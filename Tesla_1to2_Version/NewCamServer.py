@@ -157,35 +157,36 @@ def RecvFromCamera(tcpClient, clientaddr, self):
                 print(self.Dlisence + ',' + self.DColor + ',' + self.DCarFlag +
                       ',' + self.DX1 + ',' + self.DY1 + ',' + self.DX2 + ',' + self.DY2)
 
+                # if DColor == '绿色' or DColor == '绿':
                 # Only Tesla Can LockDown
                 if self.DCarFlag == '50' and int(self.DX1) > 0 and int(self.DX2) > 0:
-                    XValue = (int(self.DX1) + int(self.DX2)) / 2
-                    # 发送日志显示
-                    MyLogCam.info(
-                        str(clientaddr[0]) + "-" + str(XValue) + "-" + str(
-                            self.cf.get("StartLoad", clientaddr[0] + "_Judge")) + ':' + self.Dlisence)
+                    if self.DColor == '绿色' or self.DColor == '绿':
+                        XValue = (int(self.DX1) + int(self.DX2)) / 2
+                        # 发送日志显示
+                        MyLogCam.info(
+                            str(clientaddr[0]) + "-" + str(XValue) + "-" + str(
+                                self.cf.get("StartLoad", clientaddr[0] + "_Judge")) + ':' + self.Dlisence)
+                        # 中轴判断线
+                        JudgeValue = self.cf.getint("StartLoad", clientaddr[0] + '_Judge')
 
-                    # 中轴判断线
-                    JudgeValue = self.cf.getint("StartLoad", clientaddr[0] + '_Judge')
-
-                    if JudgeValue >= XValue > 0:
-                        timenow = int(time.time())
-                        timeSpent = timenow - timelast
-                        timelast = timenow
-                        if timeSpent > 5:
-                            print('05' + str(self.cf.get("StartLoad", clientaddr[0] + "_L")))
-                            self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0]+"_L")), self.Dlisence)
-                            self.signal_showID.emit(str(self.cf.get("StartLoad", clientaddr[0]+"_L")) + ':' + self.Dlisence)
-                    elif 1920 >= XValue > JudgeValue:
-                        timenow = int(time.time())
-                        timeSpent = timenow - timelast
-                        timelast = timenow
-                        if timeSpent > 5:
-                            print('05' + str(self.cf.get("StartLoad", clientaddr[0] + "_R")))
-                            self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0]+"_R")), self.Dlisence)
-                            self.signal_showID.emit(str(self.cf.get("StartLoad", clientaddr[0]+"_R")) + ':' + self.Dlisence)
-                    else:
-                        MyLogCam.info("Error XValue Range")
+                        if JudgeValue >= XValue > 0:
+                            timenow = int(time.time())
+                            timeSpent = timenow - timelast
+                            timelast = timenow
+                            if timeSpent > 5:
+                                print('05' + str(self.cf.get("StartLoad", clientaddr[0] + "_L")))
+                                self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0]+"_L")), self.Dlisence)
+                                self.signal_showID.emit(str(self.cf.get("StartLoad", clientaddr[0]+"_L")) + ':' + self.Dlisence)
+                        elif 1920 >= XValue > JudgeValue:
+                            timenow = int(time.time())
+                            timeSpent = timenow - timelast
+                            timelast = timenow
+                            if timeSpent > 5:
+                                print('05' + str(self.cf.get("StartLoad", clientaddr[0] + "_R")))
+                                self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0]+"_R")), self.Dlisence)
+                                self.signal_showID.emit(str(self.cf.get("StartLoad", clientaddr[0]+"_R")) + ':' + self.Dlisence)
+                        else:
+                            MyLogCam.info("Error XValue Range")
 
         else:
             print('收到数据长度不正确！')
