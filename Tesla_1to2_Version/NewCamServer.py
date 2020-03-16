@@ -73,6 +73,10 @@ def RecvFromCamera(tcpClient, clientaddr, self):
     timelast = int(0)
     timeSpent = int(0)
 
+    timenow_R = int(0)
+    timelast_R = int(0)
+    timeSpent_R = int(0)
+
     tcpClient.send('1ACFCD0109D7'.encode('utf-8'))  # 连接上摄像机时候初始化为红灯
     time.sleep(0.5)
     tcpClient.send('1ACFCD1009D7'.encode('utf-8'))  # 连接上摄像机时候初始化为绿灯
@@ -178,10 +182,10 @@ def RecvFromCamera(tcpClient, clientaddr, self):
                                 self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0]+"_L")), self.Dlisence)
                                 self.signal_showID.emit(str(self.cf.get("StartLoad", clientaddr[0]+"_L")) + ':' + self.Dlisence)
                         elif 1920 >= XValue > JudgeValue:
-                            timenow = int(time.time())
-                            timeSpent = timenow - timelast
-                            timelast = timenow
-                            if timeSpent > 5:
+                            timenow_R = int(time.time())
+                            timeSpent_R = timenow_R - timelast_R
+                            timelast_R = timenow_R
+                            if timeSpent_R > 5:
                                 print('05' + str(self.cf.get("StartLoad", clientaddr[0] + "_R")))
                                 self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0]+"_R")), self.Dlisence)
                                 self.signal_showID.emit(str(self.cf.get("StartLoad", clientaddr[0]+"_R")) + ':' + self.Dlisence)
