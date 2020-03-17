@@ -158,8 +158,8 @@ def RecvFromCamera(tcpClient, clientaddr, self):
                     self.DX2 = data[a6 + 3:a7]
                 if a7 != -1 and a8 != -1 and a8 - a7 > 3:
                     self.DY2 = data[a7 + 3:a8]
-                print(self.Dlisence + ',' + self.DColor + ',' + self.DCarFlag +
-                      ',' + self.DX1 + ',' + self.DY1 + ',' + self.DX2 + ',' + self.DY2)
+                MyLogCam.info(self.Dlisence + ',' + self.DColor + ',' + self.DCarFlag + ','
+                              + self.DX1 + ',' + self.DY1 + ',' + self.DX2 + ',' + self.DY2)
 
                 # if DColor == '绿色' or DColor == '绿':
                 # Only Tesla Can LockDown
@@ -176,19 +176,24 @@ def RecvFromCamera(tcpClient, clientaddr, self):
                         if JudgeValue >= XValue > 0:
                             timenow = int(time.time())
                             timeSpent = timenow - timelast
-                            timelast = timenow
                             if timeSpent > 5:
                                 print('05' + str(self.cf.get("StartLoad", clientaddr[0] + "_L")))
                                 self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0]+"_L")), self.Dlisence)
                                 self.signal_showID.emit(str(self.cf.get("StartLoad", clientaddr[0]+"_L")) + ':' + self.Dlisence)
+                                timelast = timenow
+                            else:
+                                pass
+
                         elif 1920 >= XValue > JudgeValue:
                             timenow_R = int(time.time())
                             timeSpent_R = timenow_R - timelast_R
-                            timelast_R = timenow_R
                             if timeSpent_R > 5:
                                 print('05' + str(self.cf.get("StartLoad", clientaddr[0] + "_R")))
                                 self.signal_detect.emit('05' + str(self.cf.get("StartLoad", clientaddr[0]+"_R")), self.Dlisence)
                                 self.signal_showID.emit(str(self.cf.get("StartLoad", clientaddr[0]+"_R")) + ':' + self.Dlisence)
+                                timelast_R = timenow_R
+                            else:
+                                pass
                         else:
                             MyLogCam.info("Error XValue Range")
 
