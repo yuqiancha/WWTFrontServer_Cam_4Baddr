@@ -124,7 +124,7 @@ def RecvFromCamera(tcpClient,clientaddr,self):
                     if DColor=='绿色' or DColor=='绿':
                         MyLogCam.info(str(clientaddr[0])+str(self.cf.get("StartLoad",clientaddr[0]))+':'+Dlisence+"绿")
 
-                        if Dlisence[0:2]=='沪AF':
+                        if Dlisence[0:3]=='沪AF':
                             MyLogCam.info("混动绿牌不降低锁")
                         else:
                             timenow = int(time.time())

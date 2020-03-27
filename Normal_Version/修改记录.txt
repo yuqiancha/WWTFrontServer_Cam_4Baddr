@@ -1,4 +1,4 @@
-2018-02-25：将3个时间都加上去了
+﻿2018-02-25：将3个时间都加上去了
 self.WaitCarComeTime = int(120)              #等待车子停进来的时间，2min不来就升锁
 self.WaitCarLeaveTime = int(300)             #车子停进来前5min，依旧是2min升锁，超出时间立刻升锁
 self.AfterCarLeaveTime = int(60)             #超出5min，认为车子是要走了，1min升锁
@@ -18,3 +18,7 @@ NewCamServer.py为开启TCPServer，监听摄像机连接并接收摄像机的�
 
 2020-03-11：
 针对特斯拉一坨二，修改一个版本，车标识别
+
+
+2020-03-27：
+沪AF判断条件增加，小橘充电场站
