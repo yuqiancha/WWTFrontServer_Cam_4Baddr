@@ -1,4 +1,4 @@
-mport os
+import os
 import time
 import threading
 from PyQt5.QtCore import *
